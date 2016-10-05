@@ -7,6 +7,9 @@ export default function (store) {
   return {
     path: 'projects',
     component: LandingContainer,
+    childRoutes: [
+      require('./editProject')
+    ],
     getIndexRoute: async (location, cb) => {
       const promiseMap = setImports();
       const importMap = await resolvePromiseMap(promiseMap);

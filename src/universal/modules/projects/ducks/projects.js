@@ -53,13 +53,32 @@ export function getAllProjects() {
 }
 // get projects related to a user
 export function getUsersProjectsById(id) {
+  // const projectSchema =
+  // `{
+  //     id,
+  //     name,
+  //     description
+  //   }
+  // `;
   const projectSchema =
   `{
-      id,
-      name,
+    id
+    name
+    description
+    categories{id,name,visible,
+      entries{id,title,projectId,datatypeId,visible,data,categoryId}
+      datatype{
+      id
+      name
       description
-    }
-  `;
+      visible
+        fields{
+          id
+          name
+          description
+      }
+    }}
+  }`;
   return async dispatch => {
     if (!id) {
       dispatch({

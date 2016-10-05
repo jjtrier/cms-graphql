@@ -16,11 +16,9 @@ export default class Users extends Component {
     isAuthorized: false,
     projects: this.props.projects
   }
-
   // handleDelete = id => {
   //   this.props.dispatch(deleteUser(id));
   // }
-
   checkPermissions = permissions => {
     if (!permissions) return false;
     if (permissions.indexOf('write') > -1) {
@@ -30,6 +28,7 @@ export default class Users extends Component {
   }
 
   componentWillUpdate(nextProps) {
+    console.log('this.props.projects !!', this.props.projects);
     const self = this;
     if (nextProps.auth.user.permissions !== self.props.auth.user.permissions) {
       this.setState({
