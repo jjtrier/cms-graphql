@@ -8,6 +8,7 @@ export default store => {
       require('./users')(store),
       require('./projects')(store),
       require('./editProject')(store),
+      require('./datatypes')(store),
       require('./landing'),
       require('./accounts')(store),
       require('./graphql'),
