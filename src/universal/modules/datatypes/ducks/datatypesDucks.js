@@ -87,28 +87,36 @@ export function getDatatypes() {
 //   };
 // };
 // update a datatype
-export function updateDatatype(datatype) {
+export function updateDatatype(datatype, variables) {
+  // const datatypeMutation =
+  // `
+  // (
+  //   id:${datatype.id},
+  //   name:"${datatype.name}",
+  //   description:"${datatype.description}",
+  //   visible:${datatype.visible},
+  //   fields:${datatype.fields}
+  // )
+  // `;
   const datatypeMutation =
   `
   (
-    id:${datatype.id},
-    name:"${datatype.name}",
-    description:"${datatype.description}",
-    visible:${datatype.visible},
-    fields:${datatype.fields}
+    id: $id,
+    name: $name,
+    description: $description,
+    visible: $visible,
+    fields: $fields
   )
   `;
-  const datatypeSchema =
-  `{id,name,description,visible,fields{id,name,description}}`;
+  const datatypeSchema = `{id,name,description,visible,fields{id,name,description}}`;
   return async(dispatch, getState) => {
     const query = `
-        mutation {
+        mutation M($id: Int!, $name: String, $description: String, $visible: Boolean, $fields: [Int]){
           updateDatatype
           ${datatypeMutation}
           ${datatypeSchema}
         }`;
-        console.log('query in ducks', query);
-    const {error, data} = await fetchGraphQL({query});
+    const {error, data} = await fetchGraphQL({query, variables});
     if (error) {
       console.error(error);
     } else {

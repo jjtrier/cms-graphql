@@ -64,9 +64,11 @@ export default class DatatypeEditModal extends Component {
       visible: this.state.visible,
       fields: this.state.fields
     };
-    newDatatypeInfo.fields = textifyArray(this.state.fields);
+    // newDatatypeInfo.fields = textifyArray(this.state.fields);
     console.log('newDatatypeInfo', newDatatypeInfo);
-    this.props.dispatch(updateDatatype(newDatatypeInfo));
+    JSON.stringify(newDatatypeInfo);
+    console.log('newDatatypeInfo', newDatatypeInfo);
+    this.props.dispatch(updateDatatype(null, newDatatypeInfo));
   };
 
   handleClose = () => {
