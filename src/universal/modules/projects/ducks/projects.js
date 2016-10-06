@@ -3,11 +3,13 @@ import {fetchGraphQL} from '../../../utils/fetching';
 
 export const GET_PROJECTS = 'GET_PROJECTS';
 export const GET_PROJECTS_BY_USER = 'GET_PROJECTS_BY_USER';
+export const SET_PROJECT = 'SET_PROJECT';
 
 export const PROJECTS = 'projects';
 
 const initialState = iMap({
-  projects: iList()
+  projects: iList(),
+  project: iMap()
 });
 
 export function reducer(state = initialState, action) {
@@ -20,11 +22,14 @@ export function reducer(state = initialState, action) {
       return state.merge({
         projects: fromJS(action.payload)
       });
+    case SET_PROJECT:
+      return state.merge({
+        project: fromJS(action.payload)
+      });
     default:
       return state;
   }
 }
-// get all users
 //
 export function getAllProjects() {
   const projectSchema =
@@ -101,5 +106,11 @@ export function getUsersProjectsById(id) {
         payload: data.getUsersProjectsById
       });
     }
+  };
+}
+export function setProject(project) {
+  return {
+    type: SET_PROJECT,
+    payload: project
   };
 }

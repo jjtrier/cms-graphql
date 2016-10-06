@@ -17,3 +17,5 @@ const projectSchema =
     }
   }}
 }`;
+
+browserHistory.push('/');
