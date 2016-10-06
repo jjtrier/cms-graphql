@@ -29,7 +29,17 @@ export default class EditProject extends Component {
 
   render() {
     console.log('this.props.project', this.props.project);
-    
+    let categories = this.state.categories;
+    let categoriesTemplate = categories.map((category, idx) => {
+      return (
+        <tr key={idx}>
+          <td>{category.id}</td>
+          <td>{category.name}</td>
+          <td>{category.projectId}</td>
+          <td>{category.categorytype}</td>
+        </tr>
+    );
+    })
     //
     //render block below
     return (
