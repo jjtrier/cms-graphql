@@ -25,9 +25,6 @@ export function reducer(state = initialState, action) {
         datatype: fromJS(action.payload)
       });
     case DELETE_DATATYPE:
-      return state.merge({
-        datatype: fromJS(action.payload)
-      });
     default:
       return state;
   }
@@ -35,30 +32,21 @@ export function reducer(state = initialState, action) {
 // get all users
 //
 export function getDatatypes() {
-  const userSchema =
-  `
-    {
-      email,
-      id,
-      name,
-      active,
-      permissions,
-      usertype
-    }
-  `;
+  const datatypeSchema =
+  `{id,name,description,visible,fields{id,name,description}}`;
   return async(dispatch, getState) => {
     const query = `
         query {
-          getAllUsers
-          ${userSchema}
+          getAllDatatypes
+          ${datatypeSchema}
         }`;
     const {error, data} = await fetchGraphQL({query});
     if (error) {
       console.error(error);
     } else {
       dispatch({
-        type: GET_USERS,
-        payload: data.getAllUsers
+        type: GET_DATATYPES,
+        payload: data.getAllDatatypes
       });
     }
   };
@@ -76,7 +64,7 @@ export function getDatatypes() {
 //     password:"${user.password}"
 //   )
 //   `;
-//   const userSchema =
+//   const datatypeSchema =
 //   `
 //     {
 //       authToken
@@ -87,7 +75,7 @@ export function getDatatypes() {
 //         mutation {
 //           createDatatype
 //           ${userMutation}
-//           ${userSchema}
+//           ${datatypeSchema}
 //         }`;
 //     const {error, data} = await fetchGraphQL({query});
 //     if (error) {
@@ -114,7 +102,7 @@ export function getDatatypes() {
 //     email:"${user.email}"
 //   )
 //   `;
-//   const userSchema =
+//   const datatypeSchema =
 //   `
 //     {
 //       email,
@@ -130,7 +118,7 @@ export function getDatatypes() {
 //         mutation {
 //           updateUser
 //           ${userMutation}
-//           ${userSchema}
+//           ${datatypeSchema}
 //         }`;
 //     const {error, data} = await fetchGraphQL({query});
 //     if (error) {
@@ -144,25 +132,25 @@ export function getDatatypes() {
 //     }
 //   };
 // };
+
 // delete a Datatype
-//
-// export function deleteDatatype(id) {
-//   const userMutation =
-//   `(id:${id})`;
-//   const userSchema =
-//   `{id}`;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation {deleteDatatype${userMutation}${userSchema}}`;
-//     const {error, data} = await fetchGraphQL({query});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: DELETE_USER,
-//         payload: data.deleteDatatype
-//       });
-//       await dispatch(getDatatypes());
-//     }
-//   };
-// };
+export function deleteDatatype(id) {
+  const dataTypeMutation =
+  `(id:${id})`;
+  const datatypeSchema =
+  `{id}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation {deleteDatatype${dataTypeMutation}${datatypeSchema}}`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: DELETE_DATATYPE,
+        payload: data.deleteDatatype
+      });
+      await dispatch(getDatatypes());
+    }
+  };
+};

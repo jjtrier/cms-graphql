@@ -50,7 +50,7 @@ export default class EditProject extends Component {
           onChange={this.handleChange}>
           <Tab label="Categories" value="categories" >
             <div>
-              <h2 style={styles.headline}Categories</h2>
+              <h2 style={styles.headline}>Categories</h2>
               <p>
                 Tabs are also controllable if you want to programmatically pass them their values.
                 This allows for more functionality in Tabs such as not
@@ -60,7 +60,7 @@ export default class EditProject extends Component {
           </Tab>
           <Tab label="Tab B" value="b">
             <div>
-              <h2 style={styles.headline}>Controllable Tab B</h2>
+              <h2 style={styles.headline} >Controllable Tab B</h2>
               <p>
                 This is another example of a controllable tab. Remember, if you
                 use controllable Tabs, you need to give all of your tabs values or else

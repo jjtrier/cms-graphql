@@ -20,6 +20,9 @@ export default class Header extends Component {
             <Link to="/graphql">
               <RaisedButton secondary label="Graphql Browse" className={styles.RaisedButton}/>
             </Link>
+            <Link to="/datatypes">
+              <RaisedButton secondary label="Datatypes" className={styles.RaisedButton}/>
+            </Link>
           </div>
         </div>
       </div>
