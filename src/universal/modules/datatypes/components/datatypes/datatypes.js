@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import styles from './datatypes.css';
 import {Table, Button} from 'react-bootstrap';
-// import DatatypeEditModal from './datatypeEditModal.js';
+import DatatypeEditModal from './datatypeEditModal.js';
 // import DatatypeCreateModal from './datatypeCreateModal.js';
 import {deleteDatatype} from '../../ducks/datatypesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
@@ -66,6 +66,13 @@ export default class Datatypes extends Component {
           <td>{datatype.id}</td>
           <td>{datatype.name}</td>
           <td>{datatype.description}</td>
+          <td>{getFieldNames(datatype.fields)}</td>
+          <ToggleDisplay show={self.state.isAuthorized} tag="td">
+            <DatatypeEditModal datatype={datatype} dispatch={self.props.dispatch}/>
+          </ToggleDisplay>
+          <ToggleDisplay show={self.state.isAuthorized} tag="td">
+            <DeleteButton datatype={datatype} onItemClick={self.handleDelete}></DeleteButton>
+          </ToggleDisplay>
         </tr>
     );
     });
@@ -79,6 +86,8 @@ export default class Datatypes extends Component {
               <th>Id</th>
               <th>Name</th>
               <th>Description</th>
+              <th>Fields</th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>
@@ -88,4 +97,15 @@ export default class Datatypes extends Component {
       </div>
     );
   }
+}
+
+const getFieldNames = fields => {
+  let fieldNames = '';
+  for (let i = 0; i < fields.length; i++) {
+    fieldNames += fields[i].name;
+    if (i < fields.length-1) {
+      fieldNames += ', ';
+    }
+  }
+  return fieldNames;
 }

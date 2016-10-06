@@ -17,9 +17,6 @@ export function reducer(state = initialState, action) {
         datatypes: fromJS(action.payload)
       });
     case UPDATE_DATATYPE:
-      return state.merge({
-        datatype: fromJS(action.payload)
-      });
     case CREATE_DATATYPE:
       return state.merge({
         datatype: fromJS(action.payload)
@@ -29,7 +26,7 @@ export function reducer(state = initialState, action) {
       return state;
   }
 }
-// get all users
+// get all datatypes
 //
 export function getDatatypes() {
   const datatypeSchema =
@@ -89,49 +86,40 @@ export function getDatatypes() {
 //     }
 //   };
 // };
-// update a user
-//
-// export function updateUser(user) {
-//   const userMutation =
-//   `
-//   (
-//     id:${user.id},
-//     name:"${user.name}",
-//     active:${user.active},
-//     usertype:${user.usertype},
-//     email:"${user.email}"
-//   )
-//   `;
-//   const datatypeSchema =
-//   `
-//     {
-//       email,
-//       id,
-//       name,
-//       active,
-//       permissions,
-//       usertype
-//     }
-//   `;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation {
-//           updateUser
-//           ${userMutation}
-//           ${datatypeSchema}
-//         }`;
-//     const {error, data} = await fetchGraphQL({query});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: UPDATE_USER,
-//         payload: data.updateUser
-//       });
-//       await dispatch(getUsers());
-//     }
-//   };
-// };
+// update a datatype
+export function updateDatatype(datatype) {
+  const datatypeMutation =
+  `
+  (
+    id:${datatype.id},
+    name:"${datatype.name}",
+    description:"${datatype.description}",
+    visible:${datatype.visible},
+    fields:${datatype.fields}
+  )
+  `;
+  const datatypeSchema =
+  `{id,name,description,visible,fields{id,name,description}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation {
+          updateDatatype
+          ${datatypeMutation}
+          ${datatypeSchema}
+        }`;
+        console.log('query in ducks', query);
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: UPDATE_DATATYPE,
+        payload: data.updateDatatype
+      });
+      await dispatch(getDatatypes());
+    }
+  };
+};
 
 // delete a Datatype
 export function deleteDatatype(id) {
