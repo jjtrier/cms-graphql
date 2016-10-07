@@ -105,13 +105,26 @@ describe('Graphql Datatype route testing, no server', () => {
   });
   describe('updateDatatype', () => {
     it('it should update an datatype', done => {
-      const query = `
-      mutation{
-          updateDatatype(id:6,name:"Cat Grooming Tips from pros",
-            description:"Proper Cat Grooming in NYC",
-            visible:false,fields:[2]){id,name,description,visible,fields{id,name,description}}}`;
-      graphql(Schema, query)
+      const datatypeMutation =
+      `(
+        id: $id,
+        name: $name,
+        description: $description,
+        visible: $visible,
+        fields: $fields
+      )`;
+      const datatypeSchema = `{id,name,description,visible,fields{id,name,description}}`;
+      const variables = {
+        id: 6,
+        name: "Cat Grooming Tips from pros",
+        description: "Proper Cat Grooming in NYC",
+        visible: false,
+        fields: [2]
+      };
+      const query = `mutation M($id: Int!, $name: String, $description: String, $visible: Boolean, $fields: [Int]){updateDatatype${datatypeMutation}${datatypeSchema}}`;
+      graphql(Schema, query, null, context, variables)
       .then(res => {
+        console.log('res', res);
         const datatype = res.data.updateDatatype;
         expect(datatype).to.have.property('id');
         expect(datatype.name).to.equal('Cat Grooming Tips from pros');

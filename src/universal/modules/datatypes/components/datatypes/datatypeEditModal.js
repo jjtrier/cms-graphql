@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {ChipExampleSimple} from './chipsExample.js';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {updateDatatype} from '../../ducks/datatypesDucks.js';
 import {Button} from 'react-bootstrap';
@@ -9,18 +10,6 @@ const idsFromFields = fields => {
     ids.push(fields[i].id);
   }
   return ids;
-};
-
-const textifyArray = fields => {
-  let res = '[';
-  for (let i = 0; i < fields.length; i++) {
-    res += fields[i];
-    if (i < fields.length-1) {
-      res += ','
-    }
-  }
-  res += ']';
-  return res;
 };
 
 export default class DatatypeEditModal extends Component {
@@ -44,9 +33,8 @@ export default class DatatypeEditModal extends Component {
     this.setState({
       [lineKey]: event.target.value
     });
-
   };
-  handleChangeUserType = (event, index, value) => this.setState({usertype: value});
+
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
 
   handleOpen = () => {
@@ -64,10 +52,7 @@ export default class DatatypeEditModal extends Component {
       visible: this.state.visible,
       fields: this.state.fields
     };
-    // newDatatypeInfo.fields = textifyArray(this.state.fields);
-    console.log('newDatatypeInfo', newDatatypeInfo);
     JSON.stringify(newDatatypeInfo);
-    console.log('newDatatypeInfo', newDatatypeInfo);
     this.props.dispatch(updateDatatype(null, newDatatypeInfo));
   };
 

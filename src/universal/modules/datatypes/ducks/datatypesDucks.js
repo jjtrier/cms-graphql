@@ -88,16 +88,6 @@ export function getDatatypes() {
 // };
 // update a datatype
 export function updateDatatype(datatype, variables) {
-  // const datatypeMutation =
-  // `
-  // (
-  //   id:${datatype.id},
-  //   name:"${datatype.name}",
-  //   description:"${datatype.description}",
-  //   visible:${datatype.visible},
-  //   fields:${datatype.fields}
-  // )
-  // `;
   const datatypeMutation =
   `
   (

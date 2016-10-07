@@ -1,4 +1,4 @@
-SAAS ready Boilerplate with serverside rendering react
+CMS with serverside rendering react, using postgres, graphql
 
 Todos
-- hook postgres database to graphql
+- refactor graphql tests to use variables, completed example is in datatype for update
