@@ -7,12 +7,12 @@ import {blue300, indigo900} from 'material-ui/styles/colors';
 
 const styles = {
   chip: {
-    margin: 4,
+    margin: 4
   },
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap'
-  },
+  }
 };
 
 function handleRequestDelete() {
@@ -36,50 +36,36 @@ export default class ChipExampleSimple extends React.Component {
       <div style={styles.wrapper}>
 
         <Chip
-          style={styles.chip}
-        >
+          style={styles.chip}>
           Text Chip
         </Chip>
 
         <Chip
           onRequestDelete={handleRequestDelete}
           onTouchTap={handleTouchTap}
-          style={styles.chip}
-        >
+          style={styles.chip}>
           Deletable Text Chip
-        </Chip>
-
-        <Chip
-          onTouchTap={handleTouchTap}
-          style={styles.chip}
-        >
-          <Avatar src="images/uxceo-128.jpg" />
-          Image Avatar Chip
         </Chip>
 
         <Chip
           onRequestDelete={handleRequestDelete}
           onTouchTap={handleTouchTap}
-          style={styles.chip}
-        >
-          <Avatar src="images/ok-128.jpg" />
+          style={styles.chip}>
           Deletable Avatar Chip
         </Chip>
 
         <Chip
           onTouchTap={handleTouchTap}
-          style={styles.chip}
-        >
-          <Avatar icon={<FontIcon className="material-icons">perm_identity</FontIcon>} />
+          style={styles.chip}>
+          <Avatar icon={<FontIcon className="material-icons">perm_identity</FontIcon>}/>
           FontIcon Avatar Chip
         </Chip>
 
         <Chip
           onRequestDelete={handleRequestDelete}
           onTouchTap={handleTouchTap}
-          style={styles.chip}
-        >
-          <Avatar color="#444" icon={<SvgIconFace />} />
+          style={styles.chip}>
+          <Avatar color="#444" icon={<SvgIconFace />}/>
           SvgIcon Avatar Chip
         </Chip>
 
@@ -92,8 +78,7 @@ export default class ChipExampleSimple extends React.Component {
           backgroundColor={blue300}
           onRequestDelete={handleRequestDelete}
           onTouchTap={handleTouchTap}
-          style={styles.chip}
-        >
+          style={styles.chip}>
           <Avatar size={32} color={blue300} backgroundColor={indigo900}>
             MB
           </Avatar>

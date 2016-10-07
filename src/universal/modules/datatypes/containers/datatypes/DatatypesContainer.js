@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Datatypes from '../../components/datatypes/datatypes';
-import {getDatatypes} from '../../ducks/datatypesDucks.js';
+import {getDatatypes, getFields} from '../../ducks/datatypesDucks.js';
 import {loginToken} from '../../../auth/ducks/auth.js'
 import {connect} from 'react-redux';
 
@@ -19,6 +19,7 @@ export default class DatatypesContainer extends Component {
     const {dispatch} = props;
     dispatch(loginToken());
     dispatch(getDatatypes());
+    dispatch(getFields());
   }
   render() {
     return <Datatypes {...this.props} {...this.props.datatypes} {...this.props.auth}/>;
@@ -27,7 +28,7 @@ export default class DatatypesContainer extends Component {
 
 function mapStateToProps(state) {
   state = ensureState(state);
-  // console.log('state',state);
+  // console.log('stuff', state.get('datatypes').toJS());
   return {
     datatypes: state.get('datatypes').toJS(),
     auth: state.get('auth').toJS()

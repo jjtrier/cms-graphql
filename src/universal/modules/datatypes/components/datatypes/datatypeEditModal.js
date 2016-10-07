@@ -1,8 +1,24 @@
 import React, {Component, PropTypes} from 'react';
-import {ChipExampleSimple} from './chipsExample.js';
+// import {ChipExampleSimple} from './chipsExample.js';
+import Chip from 'material-ui/Chip';
+import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {updateDatatype} from '../../ducks/datatypesDucks.js';
-import {Button} from 'react-bootstrap';
+import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+
+const styles = {
+  chip: {
+    margin: 0
+  },
+  wrapper: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  }
+};
+
+function handleTouchTap() {
+  alert('You clicked the Chip.');
+}
 
 const idsFromFields = fields => {
   let ids = [];
@@ -16,6 +32,7 @@ export default class DatatypeEditModal extends Component {
   static propTypes = {
     datatype: PropTypes.object,
     datatypes: PropTypes.array,
+    fields: PropTypes.array,
     dispatch: PropTypes.func
   }
   state = {
@@ -24,7 +41,7 @@ export default class DatatypeEditModal extends Component {
     name: this.props.datatype.name,
     description: this.props.datatype.description,
     visible: this.props.datatype.visible,
-    fields: idsFromFields(this.props.datatype.fields),
+    fields: this.props.datatype.fields,
     errorText: ''
   };
 
@@ -35,6 +52,11 @@ export default class DatatypeEditModal extends Component {
     });
   };
 
+  handleRequestChipDelete = field => {
+    console.log('You clicked the delete button.', field.name);
+    alert('You clicked the delete button.', field.name);
+  }
+
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
 
   handleOpen = () => {
@@ -43,14 +65,13 @@ export default class DatatypeEditModal extends Component {
 
   handleSubmit = () => {
     this.setState({open: false});
-    console.log('this.state from submit', this.state);
 
     let newDatatypeInfo = {
       id: this.state.id,
       name: this.state.name,
       description: this.state.description,
       visible: this.state.visible,
-      fields: this.state.fields
+      fields: idsFromFields(this.state.fields)
     };
     JSON.stringify(newDatatypeInfo);
     this.props.dispatch(updateDatatype(null, newDatatypeInfo));
@@ -71,14 +92,41 @@ export default class DatatypeEditModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
+    // templatize the fields to be chips in Component
+    const self = this;
+    let allFields = this.props.fields;
+    let fields = this.state.fields;
+    let templateStoredFields = fields.map((field, idx) => {
+      return (
+        <ListGroupItem key={idx}>
+          <Chip
+            onRequestDelete={self.handleRequestChipDelete}
+            onTouchTap={handleTouchTap}
+            style={styles.chip}>
+            {field.name}
+          </Chip>
+        </ListGroupItem>
+      );
+    });
+    let templateAllFields = allFields.map((field, idx) => {
+      return (
+        <ListGroupItem key={idx}>
+          <Chip
+            onTouchTap={handleTouchTap}
+            style={styles.chip}>
+            {field.name}
+          </Chip>
+        </ListGroupItem>
+      );
+    });
 
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Datatype</Button>
         <Dialog
-          title="Edit Datatype, ID {this.state.id}"
-          autoDetectWindowHeight={false}
-          autoScrollBodyContent={false}
+          title="Edit Datatype"
+          autoDetectWindowHeight={true}
+          autoScrollBodyContent={true}
           contentStyle={{width: "100%", maxHeight: "none"}}
           actions={actions} open={this.state.open} >
           <div>
@@ -102,6 +150,16 @@ export default class DatatypeEditModal extends Component {
               <MenuItem key={2} value={false} primaryText={'Hidden'}/>
             </SelectField>
             <Divider/>
+          </div>
+          {/* diplay fields */}
+          <h4>Fields</h4>
+          <div style={styles.wrapper}>
+            <ListGroup>
+              {templateAllFields}
+            </ListGroup>
+            <ListGroup>
+              {templateStoredFields}
+            </ListGroup>
           </div>
         </Dialog>
       </div>

@@ -24,6 +24,7 @@ let DeleteButton = React.createClass({
 export default class Datatypes extends Component {
   static propTypes = {
     datatypes: PropTypes.array,
+    fields: PropTypes.array,
     dispatch: PropTypes.func,
     auth: PropTypes.object
   }
@@ -68,7 +69,9 @@ export default class Datatypes extends Component {
           <td>{datatype.description}</td>
           <td>{getFieldNames(datatype.fields)}</td>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
-            <DatatypeEditModal datatype={datatype} dispatch={self.props.dispatch}/>
+            <DatatypeEditModal datatype={datatype}
+              fields={self.props.fields}
+              dispatch={self.props.dispatch}/>
           </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
             <DeleteButton datatype={datatype} onItemClick={self.handleDelete}></DeleteButton>

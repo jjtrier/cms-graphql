@@ -181,9 +181,10 @@ function seed() {
   // now add fields to datatypes
   .then(() => {
     const datatypePromises = [];
+    const lessCreatedFields = createdFields.slice(0, 2);
     createdDatatypes.forEach(datatype => {
       datatypePromises.push(
-        datatype.setFields(createdFields)
+        datatype.setFields(lessCreatedFields)
       );
     });
     return promise.each(datatypePromises, () => {})

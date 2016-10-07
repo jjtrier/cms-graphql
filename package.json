@@ -6,8 +6,6 @@
   "scripts": {
     "start": "NODE_ENV=development node ./src/server/server.babel.js",
     "test": "NODE_ENV=testing mocha --recursive --compilers js:babel-core/register --require babel-polyfill",
-    "test:graphql": "babel-node runseed.js && mocha --recursive --compilers js:babel-core/register --require babel-polyfill test/graphql",
-    "test:sequelize": "babel-node runseed.js && mocha --recursive --compilers js:babel-core/register --require babel-polyfill test/graphql",
     "seed": "babel-node runseed.js"
   },
   "author": "",

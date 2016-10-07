@@ -5,9 +5,12 @@ export const GET_DATATYPES = 'GET_DATATYPES';
 export const UPDATE_DATATYPE = 'UPDATE_DATATYPE';
 export const CREATE_DATATYPE = 'CREATE_DATATYPE';
 export const DELETE_DATATYPE = 'DELETE_DATATYPE';
+export const GET_FIELDS = 'GET_FIELDS';
+
 
 const initialState = iMap({
-  datatypes: iList()
+  datatypes: iList(),
+  fields: iList()
 });
 
 export function reducer(state = initialState, action) {
@@ -15,6 +18,10 @@ export function reducer(state = initialState, action) {
     case GET_DATATYPES:
       return state.merge({
         datatypes: fromJS(action.payload)
+      });
+    case GET_FIELDS:
+      return state.merge({
+        fields: fromJS(action.payload)
       });
     case UPDATE_DATATYPE:
     case CREATE_DATATYPE:
@@ -44,6 +51,26 @@ export function getDatatypes() {
       dispatch({
         type: GET_DATATYPES,
         payload: data.getAllDatatypes
+      });
+    }
+  };
+}
+export function getFields() {
+  const fieldSchema =
+  `{id,name,description,datatypes{name,id,description}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        query {
+          getAllFields
+          ${fieldSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      dispatch({
+        type: GET_FIELDS,
+        payload: data.getAllFields
       });
     }
   };
