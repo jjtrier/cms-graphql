@@ -1,20 +1,14 @@
 import React, {Component, PropTypes} from 'react';
-// import {ChipExampleSimple} from './chipsExample.js';
+import stylesToo from './datatypes.css';
 import Chip from 'material-ui/Chip';
 import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
+import {blue300, indigo900} from 'material-ui/styles/colors';
 import {updateDatatype} from '../../ducks/datatypesDucks.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {styles} from './modalStyles.js';
+import {DeletableChip} from './subComponents/subComponents.js';
 
-const styles = {
-  chip: {
-    margin: 0
-  },
-  wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  }
-};
 
 function handleTouchTap() {
   alert('You clicked the Chip.');
@@ -52,9 +46,14 @@ export default class DatatypeEditModal extends Component {
     });
   };
 
-  handleRequestChipDelete = field => {
-    console.log('You clicked the delete button.', field.name);
-    alert('You clicked the delete button.', field.name);
+  handleRequestChipDelete = id => {
+    console.log('You clicked the delete button.', id);
+    let newFields = [];
+    newFields = this.state.fields.filter(field => field.id !== id);
+    this.setState({fields: newFields});
+  }
+  handleChipAdd = field => {
+    console.log('You clicked the add button.', field.name);
   }
 
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
@@ -99,12 +98,7 @@ export default class DatatypeEditModal extends Component {
     let templateStoredFields = fields.map((field, idx) => {
       return (
         <ListGroupItem key={idx}>
-          <Chip
-            onRequestDelete={self.handleRequestChipDelete}
-            onTouchTap={handleTouchTap}
-            style={styles.chip}>
-            {field.name}
-          </Chip>
+          <DeletableChip field={field} onDeleteClick={self.handleRequestChipDelete}></DeletableChip>
         </ListGroupItem>
       );
     });
@@ -112,7 +106,8 @@ export default class DatatypeEditModal extends Component {
       return (
         <ListGroupItem key={idx}>
           <Chip
-            onTouchTap={handleTouchTap}
+            backgroundColor={blue300}
+            onTouchTap={self.handleChipAdd}
             style={styles.chip}>
             {field.name}
           </Chip>
@@ -127,9 +122,10 @@ export default class DatatypeEditModal extends Component {
           title="Edit Datatype"
           autoDetectWindowHeight={true}
           autoScrollBodyContent={true}
-          contentStyle={{width: "100%", maxHeight: "none"}}
+          contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
           <div>
+            <div style={styles.wrapper}>
             <TextField
               floatingLabelText="Name"
               id="name"
@@ -137,18 +133,17 @@ export default class DatatypeEditModal extends Component {
               onChange={this.handleChange}
               name="Name"
               />
-            <Divider/>
             <TextField
               floatingLabelText="Description"
               id="description"
               value={this.state.description}
               onChange={this.handleChange}
               />
-            <Divider/>
             <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
               <MenuItem key={1} value={true} primaryText={'Visible'}/>
               <MenuItem key={2} value={false} primaryText={'Hidden'}/>
             </SelectField>
+            </div>
             <Divider/>
           </div>
           {/* diplay fields */}
