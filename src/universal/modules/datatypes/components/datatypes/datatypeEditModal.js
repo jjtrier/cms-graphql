@@ -3,16 +3,23 @@ import stylesToo from './datatypes.css';
 import Chip from 'material-ui/Chip';
 import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
-import {blue300, indigo900} from 'material-ui/styles/colors';
+import {blue300, indigo900, green200} from 'material-ui/styles/colors';
 import {updateDatatype} from '../../ducks/datatypesDucks.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
-import {DeletableChip} from './subComponents/subComponents.js';
+import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
 
-
-function handleTouchTap() {
-  alert('You clicked the Chip.');
-}
+const chosenChecker = (item, checkAgainst) => {
+  let res = false;
+  let count = 0;
+  checkAgainst.forEach(check => {
+    if (check.id === item.id) {
+      count++;
+      res = true;
+    }
+  });
+  return {result: res, count};
+};
 
 const idsFromFields = fields => {
   let ids = [];
@@ -38,7 +45,7 @@ export default class DatatypeEditModal extends Component {
     fields: this.props.datatype.fields,
     errorText: ''
   };
-
+// this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;
     this.setState({
@@ -53,7 +60,8 @@ export default class DatatypeEditModal extends Component {
     this.setState({fields: newFields});
   }
   handleChipAdd = field => {
-    console.log('You clicked the add button.', field.name);
+    console.log('You clicked the add button.', field);
+    this.setState({fields: this.state.fields.concat([field])});
   }
 
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
@@ -75,12 +83,16 @@ export default class DatatypeEditModal extends Component {
     JSON.stringify(newDatatypeInfo);
     this.props.dispatch(updateDatatype(null, newDatatypeInfo));
   };
-
+// this handles the closing of the modal/dialog
   handleClose = () => {
-    this.setState({open: false});
+    this.setState({
+      open: false,
+      fields: this.props.datatype.fields
+    });
   };
 
   render() {
+    // these are used by the modal
     const actions = [
       <FlatButton
         label="Cancel"
@@ -102,15 +114,21 @@ export default class DatatypeEditModal extends Component {
         </ListGroupItem>
       );
     });
+    // templatize all available fields to be chips in Component
     let templateAllFields = allFields.map((field, idx) => {
+      let backgroundColor = blue300;
+      let check = chosenChecker(field, this.state.fields);
+      if (check.result === true) {
+        backgroundColor = green200;
+      }
       return (
         <ListGroupItem key={idx}>
-          <Chip
-            backgroundColor={blue300}
-            onTouchTap={self.handleChipAdd}
-            style={styles.chip}>
-            {field.name}
-          </Chip>
+          <AddableChip
+            backgroundColor={backgroundColor}
+            field={field}
+            count={check.count}
+            onAddClick={self.handleChipAdd}>
+          </AddableChip>
         </ListGroupItem>
       );
     });
