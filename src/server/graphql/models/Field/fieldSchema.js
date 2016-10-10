@@ -2,7 +2,8 @@ import {
   GraphQLObjectType,
   GraphQLInt,
   GraphQLString,
-  GraphQLList
+  GraphQLList,
+  GraphQLBoolean
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
 import {Datatype} from '../Datatype/datatypeSchema';
@@ -28,6 +29,12 @@ export const Field = new GraphQLObjectType({
         type: GraphQLString,
         resolve(field) {
           return field.description;
+        }
+      },
+      required: {
+        type: GraphQLBoolean,
+        resolve(field) {
+          return field.required;
         }
       },
       datatypes: {

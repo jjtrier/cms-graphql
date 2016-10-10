@@ -1,4 +1,5 @@
-import {GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLList} from 'graphql';
+import {GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLList,  GraphQLBoolean
+} from 'graphql';
 import {Field} from './fieldSchema.js';
 import promise from 'bluebird';
 // import promisify from 'es6-promisify';
@@ -19,16 +20,19 @@ export default {
       datatypes: {
         type: new GraphQLList(GraphQLInt)
       },
+      required: {
+        type: new GraphQLNonNull(GraphQLBoolean)
+      },
       dataJSON: {
         type: GraphQLJSON
       }
     },
     async resolve(source, args) {
-      console.log('args!!', args);
       const createdField = await Db.models.field.create({
         name: args.name,
         description: args.description,
-        dataJSON: args.dataJSON
+        dataJSON: args.dataJSON,
+        required: args.required
       });
       if (args.datatypes !== undefined) {
         return dataTypeSetter(createdField, args.datatypes);
@@ -48,6 +52,9 @@ export default {
       description: {
         type: GraphQLString
       },
+      required: {
+        type: new GraphQLNonNull(GraphQLBoolean)
+      },
       datatypes: {
         type: new GraphQLList(GraphQLInt)
       },
@@ -60,7 +67,7 @@ export default {
       let toUpdateField = {};
       const keysArray = Object.keys(args);
       keysArray.forEach(key => {
-        if ( args[key] && key !== 'id' && key !== 'datatypes') {
+        if ((args[key] !== undefined) && key !== 'id' && key !== 'datatypes') {
           toUpdateField[key] = args[key];
         }
       });

@@ -37,6 +37,7 @@ describe('Field Db testing', () => {
         fields[1].should.have.property('createdAt');
         fields[0].should.have.property('updatedAt');
         fields[2].should.have.property('dataJSON');
+        fields[2].should.have.property('required');
         done();
       }); // end then
     });
@@ -47,6 +48,7 @@ describe('Field Db testing', () => {
       const newField = {
         name: 'JavaScript',
         description: 'What to use to code as a cool person',
+        required: true,
         dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
       };
       Db.models.field.create(newField)
@@ -58,7 +60,9 @@ describe('Field Db testing', () => {
         field.should.have.property('createdAt');
         field.should.have.property('updatedAt');
         field.should.have.property('dataJSON');
+        field.should.have.property('required');
         (field.name).should.equal('JavaScript');
+        (field.required).should.equal(true);
         (field.description).should.equal('What to use to code as a cool person');
         (field.dataJSON.stuff).should.equal('stuff');
         done();
@@ -71,12 +75,14 @@ describe('Field Db testing', () => {
       .then(field => {
         return field.update({
           name: 'Cat Photoz',
+          required: false,
           dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
         });
       })
       .then(field => {
         field.should.be.a('object');
         field.name.should.equal('Cat Photoz');
+        field.required.should.equal(false);
         (field.dataJSON.mosttuff).should.equal('yet mo stuff');
         done();
       });

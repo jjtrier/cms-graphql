@@ -44,7 +44,6 @@ export default class Graphiql extends Component {
     );
   }
   _onClickToolbarButton() {
-    console.log('Hi there');
     browserHistory.push('/');
   }
 }

@@ -46,7 +46,7 @@ describe('Graphql Datatype route testing, no server', () => {
         expect(datatypes[0].description).to.be.a('string');
         expect(datatypes[0].visible).to.be.a('boolean');
         expect(datatypes[0].fields).to.be.a('array');
-        expect(datatypes[0].fields[0].name).to.equal('HTML Template');
+        expect(datatypes[0].fields[0].name).to.equal('Text');
 
         done();
       })
@@ -94,7 +94,7 @@ describe('Graphql Datatype route testing, no server', () => {
         expect(datatype.visible).to.equal(true);
         expect(datatype.fields).to.be.a('array');
         expect(datatype.fields.length).to.equal(2);
-        expect(datatype.fields[0].name).to.equal('HTML Template');
+        expect(datatype.fields[0].name).to.equal('Text');
         done();
       })
       .catch(err => {
@@ -124,7 +124,6 @@ describe('Graphql Datatype route testing, no server', () => {
       const query = `mutation M($id: Int!, $name: String, $description: String, $visible: Boolean, $fields: [Int]){updateDatatype${datatypeMutation}${datatypeSchema}}`;
       graphql(Schema, query, null, context, variables)
       .then(res => {
-        console.log('res', res);
         const datatype = res.data.updateDatatype;
         expect(datatype).to.have.property('id');
         expect(datatype.name).to.equal('Cat Grooming Tips from pros');

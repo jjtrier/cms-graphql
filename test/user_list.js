@@ -147,48 +147,70 @@ export const datatypes = [
 ];
 export const fields = [
   {
-    name: 'HTML Template',
-    description: 'some HTML'
+    name: 'Text',
+    description: 'Text Input',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'CSS',
-    description: 'some CSS'
+    description: 'some CSS',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Gallery Field',
-    description: 'a Gallery Field'
+    description: 'a Gallery Field',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Image Field',
-    description: 'a Image Field'
+    description: 'a Image Field',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Select List',
-    description: 'a Select List'
+    description: 'a Select List',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Gallery Field',
-    description: 'a Gallery Field'
+    description: 'a Gallery Field',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Date',
-    description: 'a Date'
+    description: 'a Date',
+    required: true,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Gallery Field',
-    description: 'a Gallery Field'
+    description: 'a Gallery Field',
+    required: false,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Geolocation',
-    description: 'a Geolocation Field'
+    description: 'a Geolocation Field',
+    required: false,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'End Date',
-    description: 'an End Date'
+    description: 'an End Date',
+    required: false,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   },
   {
     name: 'Field Label',
-    description: 'a Gallery Field'
+    description: 'a Gallery Field',
+    required: false,
+    dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
   }
 ];
 export const assets = [

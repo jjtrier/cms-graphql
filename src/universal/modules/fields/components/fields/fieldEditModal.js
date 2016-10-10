@@ -1,11 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import keydown from 'react-keydown';
-import stylesToo from './datatypes.css';
+import stylesToo from './fields.css';
 import Chip from 'material-ui/Chip';
 import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {blue300, indigo900, green200} from 'material-ui/styles/colors';
-import {updateDatatype} from '../../ducks/datatypesDucks.js';
+import {updateField} from '../../ducks/fieldsDucks.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
@@ -22,36 +21,19 @@ const chosenChecker = (item, checkAgainst) => {
   return {result: res, count};
 };
 
-const idsFromFields = fields => {
-  let ids = [];
-  for (let i = 0; i < fields.length; i++) {
-    ids.push(fields[i].id);
-  }
-  return ids;
-};
-
-export default class DatatypeEditModal extends Component {
+export default class FieldEditModal extends Component {
   static propTypes = {
-    datatype: PropTypes.object,
-    datatypes: PropTypes.array,
-    fields: PropTypes.array,
+    field: PropTypes.object,
     dispatch: PropTypes.func
   }
   state = {
     open: false,
-    id: this.props.datatype.id,
-    name: this.props.datatype.name,
-    description: this.props.datatype.description,
-    visible: this.props.datatype.visible,
-    fields: this.props.datatype.fields,
+    id: this.props.field.id,
+    name: this.props.field.name,
+    description: this.props.field.description,
+    dataJSON: this.props.field.dataJSON,
     errorText: ''
   };
-  @keydown(13) // or specify `which` code directly, in this case 13
-  submit( event ) {
-    // do something, or not, with the keydown event, maybe event.preventDefault()
-    console.log('yo');
-    // MyApi.post( this.state );
-  }
 // this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;
@@ -73,8 +55,6 @@ export default class DatatypeEditModal extends Component {
 
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
 
-
-
   handleOpen = () => {
     this.setState({open: true});
   };
@@ -82,21 +62,20 @@ export default class DatatypeEditModal extends Component {
   handleSubmit = () => {
     this.setState({open: false});
 
-    let newDatatypeInfo = {
+    let newFieldInfo = {
       id: this.state.id,
       name: this.state.name,
       description: this.state.description,
-      visible: this.state.visible,
-      fields: idsFromFields(this.state.fields)
+      fields: this.state.dataJSON
     };
-    JSON.stringify(newDatatypeInfo);
-    this.props.dispatch(updateDatatype(null, newDatatypeInfo));
+    JSON.stringify(newFieldInfo);
+    this.props.dispatch(updateField(null, newDatatypeInfo));
   };
 // this handles the closing of the modal/dialog
   handleClose = () => {
     this.setState({
       open: false,
-      fields: this.props.datatype.fields
+      fields: this.props.field.fields
     });
   };
 

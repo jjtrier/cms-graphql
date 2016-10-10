@@ -10,6 +10,10 @@ export const Field = Conn.define('field', {
     type: Sequelize.TEXT,
     allowNull: true
   },
+  required: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false
+  },
   dataJSON: {
     type: Sequelize.JSON,
     allowNull: true

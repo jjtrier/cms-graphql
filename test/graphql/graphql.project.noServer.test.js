@@ -97,7 +97,6 @@ describe('Graphql Project route testing, no server', () => {
         graphql(Schema, query)
         .then(res => {
           const project = res.data.createProject;
-          console.log('project!!', project);
           expect(project).to.have.property('name');
           expect(project).to.have.property('description');
           expect(project).to.have.property('id');
