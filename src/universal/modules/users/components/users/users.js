@@ -78,6 +78,7 @@ export default class Users extends Component {
         </tr>
     );
     });
+    console.log('template', template);
 
     const usertypes = self.props.usertypes;
     return (

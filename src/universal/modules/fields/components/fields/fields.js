@@ -13,7 +13,7 @@ let DeleteButton = React.createClass({
   },
   render() {
     return (
-      <Button bsStyle="danger" bsSize="xsmall" onClick={this._onClick}>Delete</Button>
+      <Button bsStyle="danger" bsSize="xsmall" onClick={this._onClick}>Delete Field</Button>
     );
   },
   _onClick() {
@@ -66,6 +66,11 @@ export default class Fields extends Component {
           <td>{field.id}</td>
           <td>{field.name}</td>
           <td>{field.description}</td>
+          <td>{field.required.toString()}</td>
+            <ToggleDisplay show={self.state.isAuthorized} tag="td">
+              <FieldEditModal field={field}
+                dispatch={self.props.dispatch}/>
+            </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
             <DeleteButton field={field} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
@@ -82,7 +87,9 @@ export default class Fields extends Component {
               <th>Id</th>
               <th>Name</th>
               <th>Description</th>
-              <th> </th>
+              <th>Required</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>

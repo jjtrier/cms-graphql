@@ -88,38 +88,38 @@ export function getFields() {
 //   };
 // };
 // update a field
-// export function updateDatatype(field, variables) {
-//   const fieldMutation =
-//   `
-//   (
-//     id: $id,
-//     name: $name,
-//     description: $description,
-//     visible: $visible,
-//     fields: $fields
-//   )
-//   `;
-//   const fieldSchema = `{id,name,description,visible,fields{id,name,description}}`;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation M($id: Int!, $name: String, $description: String, $visible: Boolean, $fields: [Int]){
-//           updateDatatype
-//           ${fieldMutation}
-//           ${fieldSchema}
-//         }`;
-//     const {error, data} = await fetchGraphQL({query, variables});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: UPDATE_FIELD,
-//         payload: data.updateDatatype
-//       });
-//       await dispatch(getFields());
-//     }
-//   };
-// }
-//
+export function updateField(field, variables) {
+  const fieldMutation =
+  `
+  (
+    id: $id,
+    name: $name,
+    description: $description,
+    datatypes: $datatypes,
+    required: $required,
+    dataJSON: $dataJSON
+  )
+  `;
+  const fieldSchema = `{id,name,description,required,datatypes{name,id,description},dataJSON}`;
+  return async(dispatch, getState) => {
+    const query = `mutation updateField($id: Int!, $name: String!, $description: String, $datatypes: [Int], $required: Boolean!, $dataJSON: JSON){
+          updateField
+          ${fieldMutation}
+          ${fieldSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: UPDATE_FIELD,
+        payload: data.updateField
+      });
+      await dispatch(getFields());
+    }
+  };
+}
+
 // delete a Field
 export function deleteField(id) {
   const fieldMutation =

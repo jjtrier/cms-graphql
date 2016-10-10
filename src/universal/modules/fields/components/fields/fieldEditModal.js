@@ -5,21 +5,9 @@ import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {blue300, indigo900, green200} from 'material-ui/styles/colors';
 import {updateField} from '../../ducks/fieldsDucks.js';
-import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {Table, Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
-
-const chosenChecker = (item, checkAgainst) => {
-  let res = false;
-  let count = 0;
-  checkAgainst.forEach(check => {
-    if (check.id === item.id) {
-      count++;
-      res = true;
-    }
-  });
-  return {result: res, count};
-};
 
 export default class FieldEditModal extends Component {
   static propTypes = {
@@ -31,6 +19,7 @@ export default class FieldEditModal extends Component {
     id: this.props.field.id,
     name: this.props.field.name,
     description: this.props.field.description,
+    required: this.props.field.required,
     dataJSON: this.props.field.dataJSON,
     errorText: ''
   };
@@ -42,18 +31,7 @@ export default class FieldEditModal extends Component {
     });
   };
 
-  handleRequestChipDelete = id => {
-    console.log('You clicked the delete button.', id);
-    let newFields = [];
-    newFields = this.state.fields.filter(field => field.id !== id);
-    this.setState({fields: newFields});
-  }
-  handleChipAdd = field => {
-    console.log('You clicked the add button.', field);
-    this.setState({fields: this.state.fields.concat([field])});
-  }
-
-  handleChangeVisible = (event, index, value) => this.setState({visible: value});
+  handleChangeRequired = (event, index, value) => this.setState({required: value});
 
   handleOpen = () => {
     this.setState({open: true});
@@ -62,20 +40,21 @@ export default class FieldEditModal extends Component {
   handleSubmit = () => {
     this.setState({open: false});
 
-    let newFieldInfo = {
+    let updateFieldInfo = {
       id: this.state.id,
       name: this.state.name,
       description: this.state.description,
-      fields: this.state.dataJSON
+      required: this.state.required,
+      dataJSON: this.state.dataJSON
     };
-    JSON.stringify(newFieldInfo);
-    this.props.dispatch(updateField(null, newDatatypeInfo));
+    JSON.stringify(updateFieldInfo);
+    this.props.dispatch(updateField(null, updateFieldInfo));
   };
 // this handles the closing of the modal/dialog
   handleClose = () => {
     this.setState({
       open: false,
-      fields: this.props.field.fields
+      field: this.props.field
     });
   };
 
@@ -91,41 +70,26 @@ export default class FieldEditModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
-    // templatize the fields to be chips in Component
-    const self = this;
-    let allFields = this.props.fields;
-    let fields = this.state.fields;
-    let templateStoredFields = fields.map((field, idx) => {
-      return (
-        <ListGroupItem key={idx}>
-          <DeletableChip field={field} onDeleteClick={self.handleRequestChipDelete}></DeletableChip>
-        </ListGroupItem>
+    // render out iteams in dataJSON
+    // console.log('this.state.dataJSON', this.state.dataJSON);
+    let dataJSON = this.state.dataJSON;
+    let template = [];
+    let idx = 0;
+    for (let key in dataJSON) {
+      const value = dataJSON[key];
+      template.push(
+        <tr key={idx}>
+          <td>{key}</td>
+          <td>{value}</td>
+        </tr>
       );
-    });
-    // templatize all available fields to be chips in Component
-    let templateAllFields = allFields.map((field, idx) => {
-      let backgroundColor = blue300;
-      let check = chosenChecker(field, this.state.fields);
-      if (check.result === true) {
-        backgroundColor = green200;
-      }
-      return (
-        <ListGroupItem key={idx}>
-          <AddableChip
-            backgroundColor={backgroundColor}
-            field={field}
-            count={check.count}
-            onAddClick={self.handleChipAdd}>
-          </AddableChip>
-        </ListGroupItem>
-      );
-    });
-
+      idx++;
+    }
     return (
       <div>
-        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Datatype</Button>
+        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Field</Button>
         <Dialog
-          title="Edit Datatype"
+          title="Edit Field"
           autoDetectWindowHeight={true}
           autoScrollBodyContent={true}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
@@ -145,22 +109,24 @@ export default class FieldEditModal extends Component {
               value={this.state.description}
               onChange={this.handleChange}
               />
-            <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
-              <MenuItem key={1} value={true} primaryText={'Visible'}/>
-              <MenuItem key={2} value={false} primaryText={'Hidden'}/>
+            <SelectField value={this.state.required} id="requiredSel" onChange={this.handleChangeRequired} floatingLabelText="Required Status">
+              <MenuItem key={1} value={true} primaryText={'True'}/>
+              <MenuItem key={2} value={false} primaryText={'False'}/>
             </SelectField>
             </div>
             <Divider/>
-          </div>
-          {/* diplay fields */}
-          <h4>Fields</h4>
-          <div style={styles.wrapper}>
-            <ListGroup>
-              {templateAllFields}
-            </ListGroup>
-            <ListGroup>
-              {templateStoredFields}
-            </ListGroup>
+              <Table striped bordered condensed hover>
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {template}
+                </tbody>
+              </Table>
+
           </div>
         </Dialog>
       </div>
