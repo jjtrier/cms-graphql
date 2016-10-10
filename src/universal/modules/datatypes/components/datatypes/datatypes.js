@@ -1,15 +1,15 @@
 import React, {Component, PropTypes} from 'react';
-import styles from './Users.css';
+import styles from './datatypes.css';
 import {Table, Button} from 'react-bootstrap';
-import UserEditModal from './userEditModal.js';
-import UserCreateModal from './userCreateModal.js';
-import {deleteUser} from '../../ducks/users.js';
+import DatatypeEditModal from './datatypeEditModal.js';
+// import DatatypeCreateModal from './datatypeCreateModal.js';
+import {deleteDatatype} from '../../ducks/datatypesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
 let DeleteButton = React.createClass({
   propTypes: {
     onItemClick: PropTypes.func,
-    user: PropTypes.object
+    datatype: PropTypes.object
   },
   render() {
     return (
@@ -17,14 +17,14 @@ let DeleteButton = React.createClass({
     );
   },
   _onClick() {
-    this.props.onItemClick(this.props.user.id);
+    this.props.onItemClick(this.props.datatype.id);
   }
 });
 
-export default class Users extends Component {
+export default class Datatypes extends Component {
   static propTypes = {
-    users: PropTypes.array,
-    usertypes: PropTypes.array,
+    datatypes: PropTypes.array,
+    fields: PropTypes.array,
     dispatch: PropTypes.func,
     auth: PropTypes.object
   }
@@ -34,7 +34,7 @@ export default class Users extends Component {
   }
 
   handleDelete = id => {
-    this.props.dispatch(deleteUser(id));
+    this.props.dispatch(deleteDatatype(id));
   }
 
   checkPermissions = permissions => {
@@ -57,47 +57,40 @@ export default class Users extends Component {
   render() {
     // sort users by id
     const self = this;
-    const users = this.props.users.sort((a, b) => {
+    const datatypes = this.props.datatypes.sort((a, b) => {
       return parseFloat(a.id) - parseFloat(b.id);
     });
-    // templatize the users to be placed in Component
-    let template = users.map((user, idx) => {
+    // templatize the datatypes to be placed in Component
+    let template = datatypes.map((datatype, idx) => {
       return (
         <tr key={idx}>
-          <td>{user.id}</td>
-          <td>{user.name}</td>
-          <td>{user.email}</td>
-          <td>{processPermissions(user.permissions)}</td>
-          <td>{user.usertype}</td>
+          <td>{datatype.id}</td>
+          <td>{datatype.name}</td>
+          <td>{datatype.description}</td>
+          <td>{getFieldNames(datatype.fields)}</td>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
-            <UserEditModal user={user} usertypes={self.props.usertypes} dispatch={self.props.dispatch}/>
+            <DatatypeEditModal datatype={datatype}
+              fields={self.props.fields}
+              dispatch={self.props.dispatch}/>
           </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
-            <DeleteButton user={user} onItemClick={self.handleDelete}></DeleteButton>
+            <DeleteButton datatype={datatype} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
         </tr>
     );
     });
 
-    const usertypes = self.props.usertypes;
     return (
       <div className={styles._container}>
-        <h1>Users</h1>
-        <ToggleDisplay show={self.state.isAuthorized} tag="div">
-          <UserCreateModal usertypes={usertypes} dispatch={self.props.dispatch}/>
-        </ToggleDisplay>
+        <h1>Datatypes</h1>
         <Table striped bordered condensed hover>
           <thead>
             <tr>
               <th>Id</th>
               <th>Name</th>
-              <th>Email</th>
-              <th>Permissions</th>
-              <th>Type</th>
-              <ToggleDisplay show={self.state.isAuthorized} tag="th">
-              </ToggleDisplay>
-              <ToggleDisplay show={self.state.isAuthorized} tag="th">
-              </ToggleDisplay>
+              <th>Description</th>
+              <th>Fields</th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>
@@ -109,15 +102,13 @@ export default class Users extends Component {
   }
 }
 
-const parsePermission = permission => {return permission.charAt(0).toUpperCase();};
-
-function processPermissions (permissions) {
-  let res = '';
-  for (let i = 0; i < permissions.length; i++) {
-    res += parsePermission(permissions[i]);
-    if (i < permissions.length - 1) {
-      res += ', ';
+const getFieldNames = fields => {
+  let fieldNames = '';
+  for (let i = 0; i < fields.length; i++) {
+    fieldNames += fields[i].name;
+    if (i < fields.length-1) {
+      fieldNames += ', ';
     }
   }
-  return res;
-};
+  return fieldNames;
+}

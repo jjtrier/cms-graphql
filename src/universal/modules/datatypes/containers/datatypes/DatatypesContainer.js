@@ -1,31 +1,36 @@
-import React, {Component} from 'react';
-import Users from '../../components/users/users';
-import {getUsers, getAllUserTypes} from '../../ducks/users.js';
+import React, {Component, PropTypes} from 'react';
+import Datatypes from '../../components/datatypes/datatypes';
+import {getDatatypes, getFields} from '../../ducks/datatypesDucks.js';
 import {loginToken} from '../../../auth/ducks/auth.js'
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import {ensureState} from 'redux-optimistic-ui';
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class UsersContainer extends Component {
+export default class DatatypesContainer extends Component {
+  static propTypes = {
+    auth: PropTypes.object,
+    dispatch: PropTypes.func,
+    datatypes: PropTypes.object
+  }
+
   constructor(props) {
     super(props);
     const {dispatch} = props;
     dispatch(loginToken());
-    dispatch(getUsers());
-    dispatch(getAllUserTypes());
+    dispatch(getDatatypes());
+    dispatch(getFields());
   }
   render() {
-    return <Users {...this.props} {...this.props.data} {...this.props.auth}/>;
+    return <Datatypes {...this.props} {...this.props.datatypes} {...this.props.auth}/>;
   }
 }
 
 function mapStateToProps(state) {
   state = ensureState(state);
-  // console.log('state',state);
+  // console.log('stuff', state.get('datatypes').toJS());
   return {
-    data: state.get('users').toJS(),
+    datatypes: state.get('datatypes').toJS(),
     auth: state.get('auth').toJS()
   };
 }

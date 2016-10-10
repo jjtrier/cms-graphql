@@ -5,9 +5,12 @@ export const GET_DATATYPES = 'GET_DATATYPES';
 export const UPDATE_DATATYPE = 'UPDATE_DATATYPE';
 export const CREATE_DATATYPE = 'CREATE_DATATYPE';
 export const DELETE_DATATYPE = 'DELETE_DATATYPE';
+export const GET_FIELDS = 'GET_FIELDS';
+
 
 const initialState = iMap({
-  datatypes: iList()
+  datatypes: iList(),
+  fields: iList()
 });
 
 export function reducer(state = initialState, action) {
@@ -16,49 +19,58 @@ export function reducer(state = initialState, action) {
       return state.merge({
         datatypes: fromJS(action.payload)
       });
-    case UPDATE_DATATYPE:
+    case GET_FIELDS:
       return state.merge({
-        datatype: fromJS(action.payload)
+        fields: fromJS(action.payload)
       });
+    case UPDATE_DATATYPE:
     case CREATE_DATATYPE:
       return state.merge({
         datatype: fromJS(action.payload)
       });
     case DELETE_DATATYPE:
-      return state.merge({
-        datatype: fromJS(action.payload)
-      });
     default:
       return state;
   }
 }
-// get all users
+// get all datatypes
 //
 export function getDatatypes() {
-  const userSchema =
-  `
-    {
-      email,
-      id,
-      name,
-      active,
-      permissions,
-      usertype
-    }
-  `;
+  const datatypeSchema =
+  `{id,name,description,visible,fields{id,name,description}}`;
   return async(dispatch, getState) => {
     const query = `
         query {
-          getAllUsers
-          ${userSchema}
+          getAllDatatypes
+          ${datatypeSchema}
         }`;
     const {error, data} = await fetchGraphQL({query});
     if (error) {
       console.error(error);
     } else {
       dispatch({
-        type: GET_USERS,
-        payload: data.getAllUsers
+        type: GET_DATATYPES,
+        payload: data.getAllDatatypes
+      });
+    }
+  };
+}
+export function getFields() {
+  const fieldSchema =
+  `{id,name,description,datatypes{name,id,description}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        query {
+          getAllFields
+          ${fieldSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      dispatch({
+        type: GET_FIELDS,
+        payload: data.getAllFields
       });
     }
   };
@@ -76,7 +88,7 @@ export function getDatatypes() {
 //     password:"${user.password}"
 //   )
 //   `;
-//   const userSchema =
+//   const datatypeSchema =
 //   `
 //     {
 //       authToken
@@ -87,7 +99,7 @@ export function getDatatypes() {
 //         mutation {
 //           createDatatype
 //           ${userMutation}
-//           ${userSchema}
+//           ${datatypeSchema}
 //         }`;
 //     const {error, data} = await fetchGraphQL({query});
 //     if (error) {
@@ -101,68 +113,57 @@ export function getDatatypes() {
 //     }
 //   };
 // };
-// update a user
-//
-// export function updateUser(user) {
-//   const userMutation =
-//   `
-//   (
-//     id:${user.id},
-//     name:"${user.name}",
-//     active:${user.active},
-//     usertype:${user.usertype},
-//     email:"${user.email}"
-//   )
-//   `;
-//   const userSchema =
-//   `
-//     {
-//       email,
-//       id,
-//       name,
-//       active,
-//       permissions,
-//       usertype
-//     }
-//   `;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation {
-//           updateUser
-//           ${userMutation}
-//           ${userSchema}
-//         }`;
-//     const {error, data} = await fetchGraphQL({query});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: UPDATE_USER,
-//         payload: data.updateUser
-//       });
-//       await dispatch(getUsers());
-//     }
-//   };
-// };
+// update a datatype
+export function updateDatatype(datatype, variables) {
+  const datatypeMutation =
+  `
+  (
+    id: $id,
+    name: $name,
+    description: $description,
+    visible: $visible,
+    fields: $fields
+  )
+  `;
+  const datatypeSchema = `{id,name,description,visible,fields{id,name,description}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation M($id: Int!, $name: String, $description: String, $visible: Boolean, $fields: [Int]){
+          updateDatatype
+          ${datatypeMutation}
+          ${datatypeSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: UPDATE_DATATYPE,
+        payload: data.updateDatatype
+      });
+      await dispatch(getDatatypes());
+    }
+  };
+};
+
 // delete a Datatype
-//
-// export function deleteDatatype(id) {
-//   const userMutation =
-//   `(id:${id})`;
-//   const userSchema =
-//   `{id}`;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation {deleteDatatype${userMutation}${userSchema}}`;
-//     const {error, data} = await fetchGraphQL({query});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: DELETE_USER,
-//         payload: data.deleteDatatype
-//       });
-//       await dispatch(getDatatypes());
-//     }
-//   };
-// };
+export function deleteDatatype(id) {
+  const dataTypeMutation =
+  `(id:${id})`;
+  const datatypeSchema =
+  `{id}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation {deleteDatatype${dataTypeMutation}${datatypeSchema}}`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: DELETE_DATATYPE,
+        payload: data.deleteDatatype
+      });
+      await dispatch(getDatatypes());
+    }
+  };
+};

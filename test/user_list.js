@@ -153,6 +153,42 @@ export const fields = [
   {
     name: 'CSS',
     description: 'some CSS'
+  },
+  {
+    name: 'Gallery Field',
+    description: 'a Gallery Field'
+  },
+  {
+    name: 'Image Field',
+    description: 'a Image Field'
+  },
+  {
+    name: 'Select List',
+    description: 'a Select List'
+  },
+  {
+    name: 'Gallery Field',
+    description: 'a Gallery Field'
+  },
+  {
+    name: 'Date',
+    description: 'a Date'
+  },
+  {
+    name: 'Gallery Field',
+    description: 'a Gallery Field'
+  },
+  {
+    name: 'Geolocation',
+    description: 'a Geolocation Field'
+  },
+  {
+    name: 'End Date',
+    description: 'an End Date'
+  },
+  {
+    name: 'Field Label',
+    description: 'a Gallery Field'
   }
 ];
 export const assets = [

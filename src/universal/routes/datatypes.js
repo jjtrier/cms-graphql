@@ -1,5 +1,5 @@
 import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
-import DataypesContainer from 'universal/modules/datatypes/containers/datatypes/DataypesContainer';
+import DatatypesContainer from 'universal/modules/datatypes/containers/datatypes/DatatypesContainer';
 import makeReducer from 'universal/redux/makeReducer';
 import {resolvePromiseMap} from 'universal/utils/promises';
 
@@ -11,7 +11,7 @@ export default function (store) {
       const promiseMap = setImports();
       const importMap = await resolvePromiseMap(promiseMap);
       const {optimistic, ...asyncReducers} = getImports(importMap);
-      const component = DataypesContainer;
+      const component = DatatypesContainer;
       const newReducer = makeReducer(asyncReducers, optimistic);
       store.replaceReducer(newReducer);
       cb(null, {component});
