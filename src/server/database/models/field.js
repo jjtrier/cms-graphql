@@ -9,6 +9,10 @@ export const Field = Conn.define('field', {
   description: {
     type: Sequelize.TEXT,
     allowNull: true
+  },
+  dataJSON: {
+    type: Sequelize.JSON,
+    allowNull: true
   }
 }
 );

@@ -4,7 +4,7 @@ import {
   GraphQLString,
   GraphQLList
 } from 'graphql';
-
+import GraphQLJSON from 'graphql-type-json';
 import {Datatype} from '../Datatype/datatypeSchema';
 
 export const Field = new GraphQLObjectType({
@@ -34,6 +34,12 @@ export const Field = new GraphQLObjectType({
         type: new GraphQLList(Datatype),
         resolve(field) {
           return field.getDatatypes();
+        }
+      },
+      dataJSON: {
+        type: GraphQLJSON,
+        resolve(field) {
+          return field.dataJSON;
         }
       }
     };

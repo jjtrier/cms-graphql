@@ -36,14 +36,17 @@ describe('Graphql Field route testing, no server', () => {
       graphql(Schema, query)
       .then(res => {
         const fields = res.data.getAllFields;
+        console.log(fields[5]);
         expect(fields).to.be.a('array');
-        expect(fields.length).to.equal(2);
+        expect(fields.length).to.equal(11);
         expect(fields[0]).to.have.property('name');
         expect(fields[1]).to.have.property('description');
         expect(fields[1]).to.have.property('id');
         expect(fields[1]).to.have.property('datatypes');
         expect(fields[0].name).to.be.a('string');
         expect(fields[0].datatypes).to.be.a('array');
+        expect(fields[5].name).to.equal('Gallery Field');
+        expect(fields[5].description).to.equal('a Gallery Field');
         done();
       })
       .catch(err => {
@@ -75,8 +78,22 @@ describe('Graphql Field route testing, no server', () => {
   });
   describe('createField', () => {
     it('it should create a field', done => {
-      const query = 'mutation{createField(name:"Mike Powers Cool Spy",description:"A field of spies",datatypes:[1]){id,name,description,datatypes{name,id,description}}}';
-      graphql(Schema, query)
+      const fieldMutation =
+      `(
+        name: $name,
+        description: $description,
+        datatypes: $datatypes,
+        dataJSON: $dataJSON
+      )`;
+      const fieldSchema = `{id,name,description,datatypes{name,id,description},dataJSON}`;
+      const variables = {
+        name: "Mike Powers Cool Spy",
+        description: "A field of spies",
+        datatypes: [1],
+        dataJSON: {"stuff": "stuff", "mosttuff": "yet mo stuff"}
+      };
+      const query = `mutation CreateField($name: String!, $description: String, $datatypes: [Int], $dataJSON: JSON){createField${fieldMutation}${fieldSchema}}`;
+      graphql(Schema, query, null, context, variables)
       .then(res => {
         const field = res.data.createField;
         expect(field).to.be.a('object');
@@ -88,6 +105,8 @@ describe('Graphql Field route testing, no server', () => {
         expect(field.name).to.equal('Mike Powers Cool Spy');
         expect(field.description).to.equal('A field of spies');
         expect(field.datatypes).to.be.a('array');
+        expect(field.dataJSON).to.be.a('object');
+        expect(field.dataJSON.stuff).to.equal('stuff');
         done();
       })
       .catch(err => {

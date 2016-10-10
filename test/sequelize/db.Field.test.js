@@ -30,12 +30,13 @@ describe('Field Db testing', () => {
       Db.models.field.findAll()
       .then(fields => {
         fields.should.be.a('array');
-        fields.length.should.equal(2);
+        fields.length.should.equal(11);
         fields[0].should.have.property('name');
         fields[0].should.have.property('description');
         fields[0].should.have.property('id');
         fields[1].should.have.property('createdAt');
         fields[0].should.have.property('updatedAt');
+        fields[2].should.have.property('dataJSON');
         done();
       }); // end then
     });
@@ -45,7 +46,8 @@ describe('Field Db testing', () => {
     it('should create a field', done => {
       const newField = {
         name: 'JavaScript',
-        description: 'What to use to code as a cool person'
+        description: 'What to use to code as a cool person',
+        dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
       };
       Db.models.field.create(newField)
       .then(field => {
@@ -55,6 +57,10 @@ describe('Field Db testing', () => {
         field.should.have.property('id');
         field.should.have.property('createdAt');
         field.should.have.property('updatedAt');
+        field.should.have.property('dataJSON');
+        (field.name).should.equal('JavaScript');
+        (field.description).should.equal('What to use to code as a cool person');
+        (field.dataJSON.stuff).should.equal('stuff');
         done();
       }); // end then
     });
@@ -63,11 +69,15 @@ describe('Field Db testing', () => {
     it('should update a field', done => {
       Db.models.field.findById(3)
       .then(field => {
-        return field.update({name: 'Cat Photoz'});
+        return field.update({
+          name: 'Cat Photoz',
+          dataJSON: {stuff: "stuff", mosttuff: "yet mo stuff"}
+        });
       })
       .then(field => {
         field.should.be.a('object');
         field.name.should.equal('Cat Photoz');
+        (field.dataJSON.mosttuff).should.equal('yet mo stuff');
         done();
       });
     }); // end then
@@ -83,7 +93,7 @@ describe('Field Db testing', () => {
       })
       .then(fields => {
         fields.should.be.a('array');
-        fields.length.should.equal(2);
+        fields.length.should.equal(11);
         done();
       });
     }); // end then

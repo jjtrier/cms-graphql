@@ -3,6 +3,7 @@ import {Field} from './fieldSchema.js';
 import promise from 'bluebird';
 // import promisify from 'es6-promisify';
 import Db from '../../../database/setupDB.js';
+import GraphQLJSON from 'graphql-type-json';
 
 export default {
   createField: {
@@ -17,12 +18,17 @@ export default {
       },
       datatypes: {
         type: new GraphQLList(GraphQLInt)
+      },
+      dataJSON: {
+        type: GraphQLJSON
       }
     },
     async resolve(source, args) {
+      console.log('args!!', args);
       const createdField = await Db.models.field.create({
         name: args.name,
-        description: args.description
+        description: args.description,
+        dataJSON: args.dataJSON
       });
       if (args.datatypes !== undefined) {
         return dataTypeSetter(createdField, args.datatypes);
@@ -44,6 +50,9 @@ export default {
       },
       datatypes: {
         type: new GraphQLList(GraphQLInt)
+      },
+      dataJSON: {
+        type: GraphQLJSON
       }
     },
     async resolve(source, args) {
