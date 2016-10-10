@@ -21,13 +21,19 @@ export default class FieldEditModal extends Component {
     description: this.props.field.description,
     required: this.props.field.required,
     dataJSON: this.props.field.dataJSON,
-    errorText: ''
+    errorText: '',
+    newFieldCount: 0
   };
 // this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;
+    console.log('inside handleChange', event.target.value);
+    // need to create a new key line with the new key name, and then delete the old one
+    let newdataJSON = this.state.dataJSON;
+    newdataJSON[lineKey] = event.target.value;
+    console.log('newdataJSON', newdataJSON);
     this.setState({
-      [lineKey]: event.target.value
+      dataJSON: newdataJSON
     });
   };
 
@@ -54,9 +60,20 @@ export default class FieldEditModal extends Component {
   handleClose = () => {
     this.setState({
       open: false,
-      field: this.props.field
+      field: this.props.field,
+      dataJSON: this.props.field.dataJSON
     });
   };
+  // handles adding another key/value Pair
+  addKeyValue = () => {
+    console.log('inside addKeyValue');
+    let newdataJSON = this.state.dataJSON;
+    newdataJSON[this.state.newFieldCount] = 'new...';
+    this.setState({
+      dataJSON: newdataJSON
+    });
+    this.state.newFieldCount++;
+  }
 
   render() {
     // these are used by the modal
@@ -75,12 +92,26 @@ export default class FieldEditModal extends Component {
     let dataJSON = this.state.dataJSON;
     let template = [];
     let idx = 0;
-    for (let key in dataJSON) {
-      const value = dataJSON[key];
+    for (let _key in dataJSON) {
+      const value = dataJSON[_key];
       template.push(
         <tr key={idx}>
-          <td>{key}</td>
-          <td>{value}</td>
+          <td>
+            <TextField
+              id={_key}
+              value={_key}
+              onChange={this.handleChange}
+              name="Key"
+              />
+          </td>
+          <td>
+            <TextField
+              id={value}
+              value={value}
+              onChange={this.handleChange}
+              name="Value"
+              />
+          </td>
         </tr>
       );
       idx++;
@@ -115,18 +146,18 @@ export default class FieldEditModal extends Component {
             </SelectField>
             </div>
             <Divider/>
-              <Table striped bordered condensed hover>
-                <thead>
-                  <tr>
-                    <th>Key</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {template}
-                </tbody>
-              </Table>
-
+            <Table striped bordered condensed hover>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {template}
+              </tbody>
+            </Table>
+            <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.addKeyValue}>Add Key/Value Pair</Button>
           </div>
         </Dialog>
       </div>
