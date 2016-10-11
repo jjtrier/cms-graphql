@@ -1,84 +1,108 @@
 import React, {Component, PropTypes} from 'react';
+import stylesToo from './fields.css';
+import Chip from 'material-ui/Chip';
+import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
-import {createUser} from '../../ducks/users.js';
-import {Button} from 'react-bootstrap';
+import {blue300, indigo900, green200} from 'material-ui/styles/colors';
+import {createField} from '../../ducks/fieldsDucks.js';
+import {Table, Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {styles} from './modalStyles.js';
+import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
 
-export default class UserCreateModal extends Component {
-
+export default class FieldEditModal extends Component {
   static propTypes = {
-    user: PropTypes.object,
-    usertypes: PropTypes.array,
+    field: PropTypes.object,
     dispatch: PropTypes.func
   }
   state = {
     open: false,
-    // id: null,
-    name: '',
-    email: '',
-    usertype: 'admin',
-    active: true,
-    password: '',
-    passwordCheck: '',
-    usertypes: this.props.usertypes,
-    errorText: ''
+    name: 'name',
+    description: 'description',
+    required: true,
+    dataJSON: mapOutDataJSON({
+      aKey: 'aValue'
+    }),
+    errorText: '',
+    newFieldCount: 0
   };
+// this handles any changes to the inputs
+handleChange = event => {
+  const lineKey = event.target.id;
+  this.setState({
+    [lineKey]: event.target.value
+  });
+};
 
-  handleChange = event => {
-    const lineKey = event.target.id;
-    if (this.state.passwordCheck === this.state.password) {
-      this.setState({errorText: ''});
-    } else {
-      this.setState({errorText: 'Passwords need to match'});
-    }
-    this.setState({
-      [lineKey]: event.target.value
-    });
-  };
+  handleChangeKey = event => {
+    let newKey = event.target.value;
+    const id = event.target.id;
+    const idx = id.slice(0, id.indexOf(":"));
+    const oldKey = id.slice(id.indexOf(":") + 1);
+    let previousState = this.state.dataJSON;
+    let previousMap = previousState[idx];
+    const storedValue = previousMap.get(oldKey);
+    previousMap.set(newKey, storedValue);
+    previousMap.delete(oldKey);
+    previousState[idx] = previousMap;
+    this.setState(
+      {dataJSON: previousState}
+    );
+  }
 
-  handleChangeUserType = (event, index, value) => this.setState({usertype: value});
-  handleChangeActive = (event, index, value) => this.setState({active: value});
-  handleKeyPress = event => {
-    if (event.key === 'Enter') {
-      console.log('enter press here! ');
-    }
-  };
+  handleChangeValue = event => {
+    let newValue = event.target.value;
+    const id = event.target.id;
+    const idx = id.slice(0, id.indexOf(":"));
+    const key = id.slice(id.indexOf(":") + 1);
+    let previousState = this.state.dataJSON;
+    let previousMap = previousState[idx];
+    previousMap.set(key, newValue);
+    previousState[idx] = previousMap;
+    this.setState(
+      {dataJSON: previousState}
+    );
+  }
+
+  handleChangeRequired = (event, index, value) => this.setState({required: value});
+
   handleOpen = () => {
     this.setState({open: true});
   };
-// this block sends the new information out on submit
+
   handleSubmit = () => {
     this.setState({open: false});
-    // this maps the string for usertype back to an integer for Id
-    let usertypeId = 0;
-    for (var i = 0; i < this.props.usertypes.length; i++) {
-      if(this.state.usertype === this.props.usertypes[i].name){
-        usertypeId = this.props.usertypes[i].id;
-      }
-    }
-    let newUserInfo = {
-      name: this.state.name,
-      email: this.state.email,
-      usertype: usertypeId,
-      active: this.state.active
-    };
-    if (this.state.password !== '' && (this.state.password === this.state.passwordCheck)) {
-      newUserInfo.password = this.state.password;
-    }
-    this.props.dispatch(createUser(newUserInfo));
-  };
 
-  handleClose = () => {
-    this.setState({open: false});
+    let createFieldInfo = {
+      name: this.state.name,
+      description: this.state.description,
+      required: this.state.required,
+      dataJSON: this.state.dataJSON
+    };
+    JSON.stringify(createFieldInfo);
+    this.props.dispatch(updateField(createFieldInfo));
   };
+// this handles the closing of the modal/dialog
+  handleClose = () => {
+    this.setState({
+      open: false,
+      field: this.props.field,
+      dataJSON: mapOutDataJSON(this.props.field.dataJSON)
+    });
+  };
+  // handles adding another key/value Pair
+  addKeyValue = () => {
+    let newdataJSON = this.state.dataJSON;
+    const newMap = new Map();
+    newMap.set(this.state.newFieldCount.toString(), '_');
+    newdataJSON.push(newMap);
+    this.setState({
+      dataJSON: newdataJSON
+    });
+    this.state.newFieldCount++;
+  }
 
   render() {
-    // this maps the usertypes array to possible choices in pulldown
-    let userTypeItems = this.props.usertypes.map((usertype, idx) => {
-      let usertypeCapped = usertype.name.substr(0, 1).toUpperCase() + usertype.name.substr(1);
-      return (
-        <MenuItem key={idx} value={usertype.name} primaryText={usertypeCapped}/>
-      );
-    });
+    // these are used by the modal
     const actions = [
       <FlatButton
         label="Cancel"
@@ -89,18 +113,45 @@ export default class UserCreateModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
+    let dataJSON = this.state.dataJSON;
 
+    let templateFromDataJSON = dataJSON.map((line, idx) => {
+      let key = line.keys().next().value;
+      let value = line.get(key);
+      let idKey = (idx + ':' + key);
+      return (
+        <tr key={idx}>
+          <td>
+            <TextField
+              id={idKey}
+              value={key}
+              onChange={this.handleChangeKey}
+              name="Key"
+              />
+          </td>
+          <td>
+            <TextField
+              id={idKey}
+              value={value}
+              onChange={this.handleChangeValue}
+              name="Value"
+              />
+          </td>
+        </tr>
+      );
+// end template items
+    });
     return (
       <div>
-        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>New User</Button>
+        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Field</Button>
         <Dialog
-          title="Create a New User"
-          autoDetectWindowHeight={false}
-          autoScrollBodyContent={false}
-          contentStyle={{width: "100%", maxHeight: "none"}}
-          onKeyDown={this.handleKeyPress}
+          title="Edit Field"
+          autoDetectWindowHeight={true}
+          autoScrollBodyContent={true}
+          contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
           <div>
+            <div style={styles.wrapper}>
             <TextField
               floatingLabelText="Name"
               id="name"
@@ -108,44 +159,45 @@ export default class UserCreateModal extends Component {
               onChange={this.handleChange}
               name="Name"
               />
-            <Divider/>
             <TextField
-              floatingLabelText="Email"
-              id="email"
-              value={this.state.email}
+              floatingLabelText="Description"
+              id="description"
+              value={this.state.description}
               onChange={this.handleChange}
               />
-            <Divider/>
-            <SelectField value={this.state.usertype} id="usertypeSel" onChange={this.handleChangeUserType} floatingLabelText="User Type">
-              {userTypeItems}
+            <SelectField value={this.state.required} id="requiredSel" onChange={this.handleChangeRequired} floatingLabelText="Required Status">
+              <MenuItem key={1} value={true} primaryText={'True'}/>
+              <MenuItem key={2} value={false} primaryText={'False'}/>
             </SelectField>
+            </div>
             <Divider/>
-            <SelectField value={this.state.active}
-              id="activeSel"
-              onChange={this.handleChangeActive}
-              floatingLabelText="Active Status">
-              <MenuItem key={1} value={true} primaryText={'Active'}/>
-              <MenuItem key={2} value={false} primaryText={'Inactive'}/>
-            </SelectField>
-              <Divider/>
-            <TextField
-              floatingLabelText="Enter New Password"
-              id="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-            />
-            <Divider/>
-            <TextField
-              floatingLabelText="Confirm New Password"
-              id="passwordCheck"
-              value={this.state.passwordCheck}
-              onChange={this.handleChange}
-              errorText={this.state.errorText}
-              onKeyDown={this.handleKeyPress}
-            />
+            <Table striped bordered condensed hover>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {templateFromDataJSON}
+              </tbody>
+            </Table>
+            <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.addKeyValue}>Add Key/Value Pair</Button>
           </div>
         </Dialog>
       </div>
     );
   }
 }
+const mapOutDataJSON = dataJSON => {
+  let arrayOfJSONData = [];
+
+for (let key in dataJSON) {
+  let newMap = new Map();
+  if (dataJSON.hasOwnProperty(key)) {
+    newMap.set(key, dataJSON[key]);
+  }
+  arrayOfJSONData.push(newMap);
+}
+  return arrayOfJSONData;
+};

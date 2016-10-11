@@ -49,45 +49,36 @@ export function getFields() {
   };
 }
 
-// create a User
-//
-// export function createDatatype(user) {
-//   const userMutation =
-//   `
-//   (
-//     name:"${user.name}",
-//     active:${user.active},
-//     usertype:${user.usertype},
-//     email:"${user.email}",
-//     password:"${user.password}"
-//   )
-//   `;
-//   const fieldSchema =
-//   `
-//     {
-//       authToken
-//     }
-//   `;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation {
-//           createDatatype
-//           ${userMutation}
-//           ${fieldSchema}
-//         }`;
-//     const {error, data} = await fetchGraphQL({query});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: CREATE_USER,
-//         payload: data.createDatatype
-//       });
-//       await dispatch(getFields());
-//     }
-//   };
-// };
-// update a field
+export function createField(variables) {
+  const fieldMutation =
+  `
+  (
+    name: $name,
+    description: $description,
+    datatypes: $datatypes,
+    required: $required,
+    dataJSON: $dataJSON
+  )
+  `;
+  const fieldSchema = `{id,name,description,required,datatypes{name,id,description},dataJSON}`;
+  return async(dispatch, getState) => {
+    const query = `mutation createField($name: String!, $description: String, $datatypes: [Int], $required: Boolean!, $dataJSON: JSON){
+          createField
+          ${fieldMutation}
+          ${fieldSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: CREATE_FIELD,
+        payload: data.createField
+      });
+      await dispatch(getFields());
+    }
+  };
+}// update a field
 export function updateField(field, variables) {
   const fieldMutation =
   `

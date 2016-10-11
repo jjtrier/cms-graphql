@@ -3,7 +3,7 @@ import styles from './fields.css';
 import {Table, Button} from 'react-bootstrap';
 import FieldEditModal from './fieldEditModal.js';
 // import DatatypeCreateModal from './fieldCreateModal.js';
-import {deleteField} from '../../ducks/fieldsDucks.js';
+import {deleteField, getFields} from '../../ducks/fieldsDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
 let DeleteButton = React.createClass({
@@ -34,6 +34,7 @@ export default class Fields extends Component {
 
   handleDelete = id => {
     this.props.dispatch(deleteField(id));
+    this.props.dispatch(getFields());
   }
 
   checkPermissions = permissions => {

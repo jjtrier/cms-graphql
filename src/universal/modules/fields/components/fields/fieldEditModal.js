@@ -25,27 +25,13 @@ export default class FieldEditModal extends Component {
     newFieldCount: 0
   };
 // this handles any changes to the inputs
-  handleChange = event => {
-    console.log('inside handleChange', lineKey, event.target.value);
-    // need to create a new key line with the new key name, and then delete the old one
-    // let newdataJSON = this.state.dataJSON;
-    // newdataJSON[lineKey] = event.target.value;
-    // console.log('newdataJSON', newdataJSON);
-    // this.setState({
-    //   dataJSON: newdataJSON
-    // });
-  };
-  // handleChangeKey = event => {
-  //   let newKey = event.target.value;
-  //   const id = event.target.id;
-  //   const idx = id.slice(0, id.indexOf(":"));
-  //   const oldKey = id.slice(id.indexOf(":") + 1);
-  //   let previousMap = this.state.dataJSON[idx];
-  //   let storedValue = previousMap.get(oldKey);
-  //   let newMap = new Map();
-  //   newMap.set(newKey, storedValue);
-  //   console.log('newMap', newMap);
-  // }
+handleChange = event => {
+  const lineKey = event.target.id;
+  this.setState({
+    [lineKey]: event.target.value
+  });
+};
+
   handleChangeKey = event => {
     let newKey = event.target.value;
     const id = event.target.id;
@@ -83,11 +69,7 @@ export default class FieldEditModal extends Component {
   };
 
   handleSubmit = () => {
-    let dataJSON = this.state.dataJSON;
-    console.log('dataJSON', dataJSON);
-
     this.setState({open: false});
-
 
     let updateFieldInfo = {
       id: this.state.id,
@@ -110,7 +92,9 @@ export default class FieldEditModal extends Component {
   // handles adding another key/value Pair
   addKeyValue = () => {
     let newdataJSON = this.state.dataJSON;
-    newdataJSON[this.state.newFieldCount] = 'new...';
+    const newMap = new Map();
+    newMap.set(this.state.newFieldCount.toString(), '_');
+    newdataJSON.push(newMap);
     this.setState({
       dataJSON: newdataJSON
     });
@@ -217,13 +201,3 @@ for (let key in dataJSON) {
 }
   return arrayOfJSONData;
 };
-
-function strMapToObj(strMap) {
-    let obj = Object.create(null);
-    for (let [k,v] of strMap) {
-        // We don’t escape the key '__proto__'
-        // which can cause problems on older engines
-        obj[k] = v;
-    }
-    return obj;
-}
