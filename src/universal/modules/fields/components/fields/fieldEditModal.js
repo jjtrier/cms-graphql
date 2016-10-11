@@ -20,13 +20,12 @@ export default class FieldEditModal extends Component {
     name: this.props.field.name,
     description: this.props.field.description,
     required: this.props.field.required,
-    dataJSON: this.props.field.dataJSON,
+    dataJSON: mapOutDataJSON(this.props.field.dataJSON),
     errorText: '',
     newFieldCount: 0
   };
 // this handles any changes to the inputs
   handleChange = event => {
-    const lineKey = event.target.id;
     console.log('inside handleChange', lineKey, event.target.value);
     // need to create a new key line with the new key name, and then delete the old one
     // let newdataJSON = this.state.dataJSON;
@@ -36,6 +35,23 @@ export default class FieldEditModal extends Component {
     //   dataJSON: newdataJSON
     // });
   };
+
+  handleChangeKey = event => {
+    // let oldKey = event.target.id;
+    let newKey = event.target.value;
+    const id = event.target.id;
+    const idx = id.slice(0, id.indexOf(":"));
+    const oldKey = id.slice(id.indexOf(":") + 1);
+    console.log('oldKey', oldKey);
+    let previousMap = this.state.dataJSON[idx];
+    let storedValue = previousMap.get(oldKey);
+    let newMap = new Map();
+    newMap.set(newKey, storedValue);
+    console.log('newMap', newMap);
+    // console.log('previousMap', previousMap);
+    // console.log('key in change', oldKey, newKey);
+    // console.log('dataJSON', this.state.dataJSON);
+  }
 
   handleChangeRequired = (event, index, value) => this.setState({required: value});
 
@@ -61,12 +77,11 @@ export default class FieldEditModal extends Component {
     this.setState({
       open: false,
       field: this.props.field,
-      dataJSON: this.props.field.dataJSON
+      dataJSON: mapOutDataJSON(this.props.field.dataJSON)
     });
   };
   // handles adding another key/value Pair
   addKeyValue = () => {
-    console.log('inside addKeyValue');
     let newdataJSON = this.state.dataJSON;
     newdataJSON[this.state.newFieldCount] = 'new...';
     this.setState({
@@ -87,42 +102,31 @@ export default class FieldEditModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
-    // render out iteams in dataJSON
-    // console.log('this.state.dataJSON', this.state.dataJSON);
     let dataJSON = this.state.dataJSON;
-    // function to make these an array of objects
-    let arrayOfJSONData = [];
 
-    for (let key in dataJSON) {
-      let objectToFill = {};
-      if (dataJSON.hasOwnProperty(key)) {
-        objectToFill[key] = dataJSON[key];
-      }
-      arrayOfJSONData.push(objectToFill);
-    }
-
-    let templateFromDataJSON = arrayOfJSONData.map((line, idx) => {
-      let keys = Object.keys(line);
+    let templateFromDataJSON = dataJSON.map((line, idx) => {
+      let key = line.keys().next().value;
+      let value = line.get(key);
       return (
         <tr key={idx}>
           <td>
             <TextField
-              id={idx.toString()}
-              value={keys[0]}
-              onChange={this.handleChange}
+              id={idx + ':' + key}
+              value={key}
+              onChange={this.handleChangeKey}
               name="Key"
               />
           </td>
           <td>
             <TextField
               id={'value:'+idx.toString()}
-              value={line[keys[0]]}
+              value={value}
               onChange={this.handleChange}
               name="Value"
               />
           </td>
         </tr>
-      )
+      );
 // end template items
     });
     return (
@@ -173,3 +177,15 @@ export default class FieldEditModal extends Component {
     );
   }
 }
+const mapOutDataJSON = dataJSON => {
+  let arrayOfJSONData = [];
+
+for (let key in dataJSON) {
+  let newMap = new Map();
+  if (dataJSON.hasOwnProperty(key)) {
+    newMap.set(key, dataJSON[key]);
+  }
+  arrayOfJSONData.push(newMap);
+}
+  return arrayOfJSONData;
+};
