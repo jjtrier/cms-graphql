@@ -27,14 +27,14 @@ export default class FieldEditModal extends Component {
 // this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;
-    console.log('inside handleChange', event.target.value);
+    console.log('inside handleChange', lineKey, event.target.value);
     // need to create a new key line with the new key name, and then delete the old one
-    let newdataJSON = this.state.dataJSON;
-    newdataJSON[lineKey] = event.target.value;
-    console.log('newdataJSON', newdataJSON);
-    this.setState({
-      dataJSON: newdataJSON
-    });
+    // let newdataJSON = this.state.dataJSON;
+    // newdataJSON[lineKey] = event.target.value;
+    // console.log('newdataJSON', newdataJSON);
+    // this.setState({
+    //   dataJSON: newdataJSON
+    // });
   };
 
   handleChangeRequired = (event, index, value) => this.setState({required: value});
@@ -90,32 +90,41 @@ export default class FieldEditModal extends Component {
     // render out iteams in dataJSON
     // console.log('this.state.dataJSON', this.state.dataJSON);
     let dataJSON = this.state.dataJSON;
-    let template = [];
-    let idx = 0;
-    for (let _key in dataJSON) {
-      const value = dataJSON[_key];
-      template.push(
+    // function to make these an array of objects
+    let arrayOfJSONData = [];
+
+    for (let key in dataJSON) {
+      let objectToFill = {};
+      if (dataJSON.hasOwnProperty(key)) {
+        objectToFill[key] = dataJSON[key];
+      }
+      arrayOfJSONData.push(objectToFill);
+    }
+
+    let templateFromDataJSON = arrayOfJSONData.map((line, idx) => {
+      let keys = Object.keys(line);
+      return (
         <tr key={idx}>
           <td>
             <TextField
-              id={_key}
-              value={_key}
+              id={idx.toString()}
+              value={keys[0]}
               onChange={this.handleChange}
               name="Key"
               />
           </td>
           <td>
             <TextField
-              id={value}
-              value={value}
+              id={'value:'+idx.toString()}
+              value={line[keys[0]]}
               onChange={this.handleChange}
               name="Value"
               />
           </td>
         </tr>
-      );
-      idx++;
-    }
+      )
+// end template items
+    });
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Field</Button>
@@ -154,7 +163,7 @@ export default class FieldEditModal extends Component {
                 </tr>
               </thead>
               <tbody>
-                {template}
+                {templateFromDataJSON}
               </tbody>
             </Table>
             <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.addKeyValue}>Add Key/Value Pair</Button>

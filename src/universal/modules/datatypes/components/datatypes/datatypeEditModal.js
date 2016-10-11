@@ -73,8 +73,6 @@ export default class DatatypeEditModal extends Component {
 
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
 
-
-
   handleOpen = () => {
     this.setState({open: true});
   };
