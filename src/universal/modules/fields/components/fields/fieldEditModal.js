@@ -35,22 +35,45 @@ export default class FieldEditModal extends Component {
     //   dataJSON: newdataJSON
     // });
   };
-
+  // handleChangeKey = event => {
+  //   let newKey = event.target.value;
+  //   const id = event.target.id;
+  //   const idx = id.slice(0, id.indexOf(":"));
+  //   const oldKey = id.slice(id.indexOf(":") + 1);
+  //   let previousMap = this.state.dataJSON[idx];
+  //   let storedValue = previousMap.get(oldKey);
+  //   let newMap = new Map();
+  //   newMap.set(newKey, storedValue);
+  //   console.log('newMap', newMap);
+  // }
   handleChangeKey = event => {
-    // let oldKey = event.target.id;
     let newKey = event.target.value;
     const id = event.target.id;
     const idx = id.slice(0, id.indexOf(":"));
     const oldKey = id.slice(id.indexOf(":") + 1);
-    console.log('oldKey', oldKey);
-    let previousMap = this.state.dataJSON[idx];
-    let storedValue = previousMap.get(oldKey);
-    let newMap = new Map();
-    newMap.set(newKey, storedValue);
-    console.log('newMap', newMap);
-    // console.log('previousMap', previousMap);
-    // console.log('key in change', oldKey, newKey);
-    // console.log('dataJSON', this.state.dataJSON);
+    let previousState = this.state.dataJSON;
+    let previousMap = previousState[idx];
+    const storedValue = previousMap.get(oldKey);
+    previousMap.set(newKey, storedValue);
+    previousMap.delete(oldKey);
+    previousState[idx] = previousMap;
+    this.setState(
+      {dataJSON: previousState}
+    );
+  }
+
+  handleChangeValue = event => {
+    let newValue = event.target.value;
+    const id = event.target.id;
+    const idx = id.slice(0, id.indexOf(":"));
+    const key = id.slice(id.indexOf(":") + 1);
+    let previousState = this.state.dataJSON;
+    let previousMap = previousState[idx];
+    previousMap.set(key, newValue);
+    previousState[idx] = previousMap;
+    this.setState(
+      {dataJSON: previousState}
+    );
   }
 
   handleChangeRequired = (event, index, value) => this.setState({required: value});
@@ -107,11 +130,12 @@ export default class FieldEditModal extends Component {
     let templateFromDataJSON = dataJSON.map((line, idx) => {
       let key = line.keys().next().value;
       let value = line.get(key);
+      let idKey = (idx + ':' + key);
       return (
         <tr key={idx}>
           <td>
             <TextField
-              id={idx + ':' + key}
+              id={idKey}
               value={key}
               onChange={this.handleChangeKey}
               name="Key"
@@ -119,9 +143,9 @@ export default class FieldEditModal extends Component {
           </td>
           <td>
             <TextField
-              id={'value:'+idx.toString()}
+              id={idKey}
               value={value}
-              onChange={this.handleChange}
+              onChange={this.handleChangeValue}
               name="Value"
               />
           </td>
