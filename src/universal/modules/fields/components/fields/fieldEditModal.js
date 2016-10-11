@@ -83,7 +83,11 @@ export default class FieldEditModal extends Component {
   };
 
   handleSubmit = () => {
+    let dataJSON = this.state.dataJSON;
+    console.log('dataJSON', dataJSON);
+
     this.setState({open: false});
+
 
     let updateFieldInfo = {
       id: this.state.id,
@@ -213,3 +217,13 @@ for (let key in dataJSON) {
 }
   return arrayOfJSONData;
 };
+
+function strMapToObj(strMap) {
+    let obj = Object.create(null);
+    for (let [k,v] of strMap) {
+        // We don’t escape the key '__proto__'
+        // which can cause problems on older engines
+        obj[k] = v;
+    }
+    return obj;
+}
