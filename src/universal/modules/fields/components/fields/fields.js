@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import styles from './fields.css';
 import {Table, Button} from 'react-bootstrap';
 import FieldEditModal from './fieldEditModal.js';
-// import DatatypeCreateModal from './fieldCreateModal.js';
+import FieldCreateModal from './fieldCreateModal.js';
 import {deleteField, getFields} from '../../ducks/fieldsDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
@@ -68,11 +68,12 @@ export default class Fields extends Component {
           <td>{field.name}</td>
           <td>{field.description}</td>
           <td>{field.required.toString()}</td>
-            <ToggleDisplay show={self.state.isAuthorized} tag="td">
+            <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
               <FieldEditModal field={field}
                 dispatch={self.props.dispatch}/>
             </ToggleDisplay>
-          <ToggleDisplay show={self.state.isAuthorized} tag="td">
+          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+            className={styles._center}>
             <DeleteButton field={field} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
         </tr>
@@ -82,6 +83,9 @@ export default class Fields extends Component {
     return (
       <div className={styles._container}>
         <h1>Fields</h1>
+        <div className={styles._bottomPadding}>
+          <FieldCreateModal dispatch={self.props.dispatch}/>
+        </div>
         <Table striped bordered condensed hover>
           <thead>
             <tr>

@@ -1,13 +1,9 @@
+/* eslint-disable pref-const */
 import React, {Component, PropTypes} from 'react';
-import stylesToo from './fields.css';
-import Chip from 'material-ui/Chip';
-import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
-import {blue300, indigo900, green200} from 'material-ui/styles/colors';
 import {updateField} from '../../ducks/fieldsDucks.js';
-import {Table, Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {Table, Button} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
-import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
 
 export default class FieldEditModal extends Component {
   static propTypes = {
@@ -20,17 +16,17 @@ export default class FieldEditModal extends Component {
     name: this.props.field.name,
     description: this.props.field.description,
     required: this.props.field.required,
-    dataJSON: mapOutDataJSON(this.props.field.dataJSON),
+    dataJSON: convertDataJSONtoMaps(this.props.field.dataJSON),
     errorText: '',
     newFieldCount: 0
   };
 // this handles any changes to the inputs
-handleChange = event => {
-  const lineKey = event.target.id;
-  this.setState({
-    [lineKey]: event.target.value
-  });
-};
+  handleChange = event => {
+    const lineKey = event.target.id;
+    this.setState({
+      [lineKey]: event.target.value
+    });
+  };
 
   handleChangeKey = event => {
     let newKey = event.target.value;
@@ -62,6 +58,15 @@ handleChange = event => {
     );
   }
 
+  handleFieldDelete = event => {
+    const idx = event.target.id;
+    let previousState = this.state.dataJSON;
+    previousState.splice([idx], 1);
+    this.setState(
+      {dataJSON: previousState}
+    );
+  }
+
   handleChangeRequired = (event, index, value) => this.setState({required: value});
 
   handleOpen = () => {
@@ -70,7 +75,6 @@ handleChange = event => {
 
   handleSubmit = () => {
     this.setState({open: false});
-
     let updateFieldInfo = {
       id: this.state.id,
       name: this.state.name,
@@ -78,7 +82,8 @@ handleChange = event => {
       required: this.state.required,
       dataJSON: this.state.dataJSON
     };
-    JSON.stringify(updateFieldInfo);
+    updateFieldInfo.dataJSON = convertMapsToObjects(updateFieldInfo.dataJSON);
+    updateFieldInfo.dataJSON = JSON.stringify(updateFieldInfo.dataJSON);
     this.props.dispatch(updateField(null, updateFieldInfo));
   };
 // this handles the closing of the modal/dialog
@@ -86,7 +91,7 @@ handleChange = event => {
     this.setState({
       open: false,
       field: this.props.field,
-      dataJSON: mapOutDataJSON(this.props.field.dataJSON)
+      dataJSON: convertDataJSONtoMaps(this.props.field.dataJSON)
     });
   };
   // handles adding another key/value Pair
@@ -105,10 +110,12 @@ handleChange = event => {
     // these are used by the modal
     const actions = [
       <FlatButton
+        key="0"
         label="Cancel"
         onTouchTap={this.handleClose}
       />,
       <FlatButton
+        key="1"
         label="Submit"
         onTouchTap={this.handleSubmit}
       />
@@ -118,7 +125,7 @@ handleChange = event => {
     let templateFromDataJSON = dataJSON.map((line, idx) => {
       let key = line.keys().next().value;
       let value = line.get(key);
-      let idKey = (idx + ':' + key);
+      let idKey = (`${idx}:${key}`);
       return (
         <tr key={idx}>
           <td>
@@ -136,6 +143,9 @@ handleChange = event => {
               onChange={this.handleChangeValue}
               name="Value"
               />
+          </td>
+          <td>
+            <Button bsStyle="danger" bsSize="xsmall" id={idx} onTouchTap={this.handleFieldDelete}>Delete Row</Button>
           </td>
         </tr>
       );
@@ -176,6 +186,7 @@ handleChange = event => {
                 <tr>
                   <th>Key</th>
                   <th>Value</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -189,9 +200,8 @@ handleChange = event => {
     );
   }
 }
-const mapOutDataJSON = dataJSON => {
+const convertDataJSONtoMaps = dataJSON => {
   let arrayOfJSONData = [];
-
 for (let key in dataJSON) {
   let newMap = new Map();
   if (dataJSON.hasOwnProperty(key)) {
@@ -201,3 +211,15 @@ for (let key in dataJSON) {
 }
   return arrayOfJSONData;
 };
+const convertMapsToObjects = maps => {
+  let arr = [];
+  for (let i = 0; i < maps.length; i++) {
+    let newObject = {};
+    maps[i].forEach((value, key) => {
+      console.log(key + " = " + value);
+      newObject[key] = value;
+    }, maps[i])
+    arr.push(newObject);
+  }
+  return arr;
+}
