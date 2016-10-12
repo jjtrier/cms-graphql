@@ -7,7 +7,7 @@ export default store => {
     childRoutes: [
       require('./users')(store),
       require('./projects')(store),
-      require('./editProject')(store),
+      require('./fields')(store),
       require('./datatypes')(store),
       require('./landing'),
       require('./accounts')(store),

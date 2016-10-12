@@ -19,3 +19,8 @@ const projectSchema =
 }`;
 
 browserHistory.push('/');
+
+<ToggleDisplay show={self.state.isAuthorized} tag="td">
+  <FieldEditModal field={field}
+    dispatch={self.props.dispatch}/>
+</ToggleDisplay>;

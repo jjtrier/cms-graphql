@@ -38,8 +38,10 @@ export default {
     args: {
     },
     async resolve(root, args) {
-      const fields = await Db.models.field.findAll();
-      return fields;
+      let fields = await Db.models.field.findAll();
+      return fields.sort((a, b) => {
+        return parseFloat(a.id) - parseFloat(b.id);
+      });
     }
   }
 };

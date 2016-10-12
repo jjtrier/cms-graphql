@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import styles from './datatypes.css';
 import {Table, Button} from 'react-bootstrap';
 import DatatypeEditModal from './datatypeEditModal.js';
-// import DatatypeCreateModal from './datatypeCreateModal.js';
+import DatatypeCreateModal from './datatypeCreateModal.js';
 import {deleteDatatype} from '../../ducks/datatypesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
@@ -68,12 +68,14 @@ export default class Datatypes extends Component {
           <td>{datatype.name}</td>
           <td>{datatype.description}</td>
           <td>{getFieldNames(datatype.fields)}</td>
-          <ToggleDisplay show={self.state.isAuthorized} tag="td">
+          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+            className={styles._center}>
             <DatatypeEditModal datatype={datatype}
               fields={self.props.fields}
               dispatch={self.props.dispatch}/>
           </ToggleDisplay>
-          <ToggleDisplay show={self.state.isAuthorized} tag="td">
+          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+            className={styles._center}>
             <DeleteButton datatype={datatype} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
         </tr>
@@ -83,6 +85,9 @@ export default class Datatypes extends Component {
     return (
       <div className={styles._container}>
         <h1>Datatypes</h1>
+          <div className={styles._bottomPadding}>
+            <DatatypeCreateModal dispatch={self.props.dispatch} fields={this.props.fields}/>
+          </div>
         <Table striped bordered condensed hover>
           <thead>
             <tr>
@@ -90,7 +95,8 @@ export default class Datatypes extends Component {
               <th>Name</th>
               <th>Description</th>
               <th>Fields</th>
-              <th> </th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
