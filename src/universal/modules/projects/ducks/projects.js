@@ -34,11 +34,23 @@ export function reducer(state = initialState, action) {
 export function getAllProjects() {
   const projectSchema =
   `{
-      id,
-      name,
+    id
+    name
+    description
+    categories{id,name,visible,
+      entries{id,title,projectId,datatypeId,visible,data,categoryId}
+      datatype{
+      id
+      name
       description
-    }
-  `;
+      visible
+        fields{
+          id
+          name
+          description
+      }
+    }}
+  }`;
   return async(dispatch, getState) => {
     const query = `
         query {
@@ -58,13 +70,6 @@ export function getAllProjects() {
 }
 // get projects related to a user
 export function getUsersProjectsById(id) {
-  // const projectSchema =
-  // `{
-  //     id,
-  //     name,
-  //     description
-  //   }
-  // `;
   const projectSchema =
   `{
     id
@@ -81,6 +86,7 @@ export function getUsersProjectsById(id) {
           id
           name
           description
+          dataJSON
       }
     }}
   }`;

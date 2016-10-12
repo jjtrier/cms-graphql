@@ -23,3 +23,11 @@
   color: red;
   fontSize: .6em
 }
+
+._bottomPadding {
+  margin-bottom: 10px
+}
+
+._center {
+  text-align: center;
+}

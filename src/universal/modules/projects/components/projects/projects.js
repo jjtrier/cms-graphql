@@ -2,9 +2,40 @@ import React, {Component, PropTypes} from 'react';
 import styles from './Projects.css';
 import {Table, Button} from 'react-bootstrap';
 import {setProject} from '../../ducks/editProject.js';
-import {browserHistory} from 'react-router'
+import {browserHistory} from 'react-router';
+import ToggleDisplay from 'react-toggle-display';
 
-export default class Users extends Component {
+let EditButton = React.createClass({
+  propTypes: {
+    onItemClick: PropTypes.func,
+    project: PropTypes.object
+  },
+  render() {
+    return (
+      <Button bsStyle="primary" bsSize="xsmall" onClick={this._onClick}>Edit</Button>
+    );
+  },
+  _onClick() {
+    this.props.onItemClick(this.props.project);
+  }
+});
+
+let DeleteButton = React.createClass({
+  propTypes: {
+    onItemClick: PropTypes.func,
+    project: PropTypes.object
+  },
+  render() {
+    return (
+      <Button bsStyle="danger" bsSize="xsmall" onClick={this._onClick}>Delete Project</Button>
+    );
+  },
+  _onClick() {
+    this.props.onItemClick(this.props.project.id);
+  }
+});
+
+export default class Projects extends Component {
   static propTypes = {
     projects: PropTypes.array,
     dispatch: PropTypes.func,
@@ -52,7 +83,13 @@ export default class Users extends Component {
           <td>{project.id}</td>
           <td>{project.name}</td>
           <td>{project.description}</td>
+          <td>{project.categories[0].name}</td>
+          <td>{project.categories[0].datatype.name}</td>
           <td><EditButton project={project} onItemClick={self.handleEdit}></EditButton></td>
+          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+            className={styles._center}>
+            <DeleteButton project={project} onItemClick={self.handleDelete}></DeleteButton>
+          </ToggleDisplay>
         </tr>
       );
     });
@@ -66,7 +103,10 @@ export default class Users extends Component {
               <th>Id</th>
               <th>Name</th>
               <th>Description</th>
+              <th>Category</th>
+              <th>Datatype</th>
               <th>Edit</th>
+              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -77,17 +117,3 @@ export default class Users extends Component {
     );
   }
 }
-let EditButton = React.createClass({
-  propTypes: {
-    onItemClick: PropTypes.func,
-    project: PropTypes.object
-  },
-  render() {
-    return (
-      <Button bsStyle="primary" bsSize="xsmall" onClick={this._onClick}>Edit</Button>
-    );
-  },
-  _onClick() {
-    this.props.onItemClick(this.props.project);
-  }
-});

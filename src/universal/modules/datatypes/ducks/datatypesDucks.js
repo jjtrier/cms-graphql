@@ -75,44 +75,37 @@ export function getFields() {
     }
   };
 }
-// create a User
-//
-// export function createDatatype(user) {
-//   const userMutation =
-//   `
-//   (
-//     name:"${user.name}",
-//     active:${user.active},
-//     usertype:${user.usertype},
-//     email:"${user.email}",
-//     password:"${user.password}"
-//   )
-//   `;
-//   const datatypeSchema =
-//   `
-//     {
-//       authToken
-//     }
-//   `;
-//   return async(dispatch, getState) => {
-//     const query = `
-//         mutation {
-//           createDatatype
-//           ${userMutation}
-//           ${datatypeSchema}
-//         }`;
-//     const {error, data} = await fetchGraphQL({query});
-//     if (error) {
-//       console.error(error);
-//     } else {
-//       await dispatch({
-//         type: CREATE_USER,
-//         payload: data.createDatatype
-//       });
-//       await dispatch(getDatatypes());
-//     }
-//   };
-// };
+// create a datatype
+export function createDatatype(variables) {
+  const datatypeMutation =
+  `
+  (
+    name: $name,
+    description: $description,
+    visible: $visible,
+    fields: $fields
+  )
+  `;
+  const datatypeSchema = `{id,name,description,visible,fields{id,name,description}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation M($name: String!, $description: String, $visible: Boolean, $fields: [Int]){
+          createDatatype
+          ${datatypeMutation}
+          ${datatypeSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: UPDATE_DATATYPE,
+        payload: data.createDatatype
+      });
+      await dispatch(getDatatypes());
+    }
+  };
+}
 // update a datatype
 export function updateDatatype(datatype, variables) {
   const datatypeMutation =
@@ -144,7 +137,7 @@ export function updateDatatype(datatype, variables) {
       await dispatch(getDatatypes());
     }
   };
-};
+}
 
 // delete a Datatype
 export function deleteDatatype(id) {

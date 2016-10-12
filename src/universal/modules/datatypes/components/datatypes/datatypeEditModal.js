@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import keydown from 'react-keydown';
+// import keydown from 'react-keydown';
 import stylesToo from './datatypes.css';
-import Chip from 'material-ui/Chip';
-import {List, ListItem} from 'material-ui/List';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {blue300, indigo900, green200} from 'material-ui/styles/colors';
 import {updateDatatype} from '../../ducks/datatypesDucks.js';
@@ -46,12 +44,7 @@ export default class DatatypeEditModal extends Component {
     fields: this.props.datatype.fields,
     errorText: ''
   };
-  @keydown(13) // or specify `which` code directly, in this case 13
-  submit( event ) {
-    // do something, or not, with the keydown event, maybe event.preventDefault()
-    console.log('yo');
-    // MyApi.post( this.state );
-  }
+
 // this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;
@@ -61,13 +54,11 @@ export default class DatatypeEditModal extends Component {
   };
 
   handleRequestChipDelete = id => {
-    console.log('You clicked the delete button.', id);
     let newFields = [];
     newFields = this.state.fields.filter(field => field.id !== id);
     this.setState({fields: newFields});
   }
   handleChipAdd = field => {
-    console.log('You clicked the add button.', field);
     this.setState({fields: this.state.fields.concat([field])});
   }
 
@@ -145,29 +136,27 @@ export default class DatatypeEditModal extends Component {
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Datatype</Button>
         <Dialog
           title="Edit Datatype"
-          autoDetectWindowHeight={true}
-          autoScrollBodyContent={true}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
           <div>
             <div style={styles.wrapper}>
-            <TextField
-              floatingLabelText="Name"
-              id="name"
-              value={this.state.name}
-              onChange={this.handleChange}
-              name="Name"
-              />
-            <TextField
-              floatingLabelText="Description"
-              id="description"
-              value={this.state.description}
-              onChange={this.handleChange}
-              />
-            <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
-              <MenuItem key={1} value={true} primaryText={'Visible'}/>
-              <MenuItem key={2} value={false} primaryText={'Hidden'}/>
-            </SelectField>
+              <TextField
+                floatingLabelText="Name"
+                id="name"
+                value={this.state.name}
+                onChange={this.handleChange}
+                name="Name"
+                />
+              <TextField
+                floatingLabelText="Description"
+                id="description"
+                value={this.state.description}
+                onChange={this.handleChange}
+                />
+              <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
+                <MenuItem key={1} value={true} primaryText={'Visible'}/>
+                <MenuItem key={2} value={false} primaryText={'Hidden'}/>
+              </SelectField>
             </div>
             <Divider/>
           </div>
