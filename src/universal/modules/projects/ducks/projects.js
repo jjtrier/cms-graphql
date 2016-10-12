@@ -4,6 +4,7 @@ import {fetchGraphQL} from '../../../utils/fetching';
 export const GET_PROJECTS = 'GET_PROJECTS';
 export const GET_PROJECTS_BY_USER = 'GET_PROJECTS_BY_USER';
 export const SET_PROJECT = 'SET_PROJECT';
+export const DELETE_PROJECT = 'DELETE_PROJECT';
 
 export const PROJECTS = 'projects';
 
@@ -26,6 +27,7 @@ export function reducer(state = initialState, action) {
       return state.merge({
         project: fromJS(action.payload)
       });
+    case DELETE_PROJECT:
     default:
       return state;
   }
@@ -48,6 +50,7 @@ export function getAllProjects() {
           id
           name
           description
+          dataJSON
       }
     }}
   }`;
@@ -118,5 +121,26 @@ export function setProject(project) {
   return {
     type: SET_PROJECT,
     payload: project
+  };
+}
+// delete a Project
+export function deleteProject(id, userId) {
+  const projectMutation =
+  `(id:${id})`;
+  const projectSchema =
+  `{id}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation {deleteProject${projectMutation}${projectSchema}}`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: DELETE_PROJECT,
+        payload: data.deleteProject
+      });
+      await dispatch(getUsersProjectsById(userId));
+    }
   };
 }

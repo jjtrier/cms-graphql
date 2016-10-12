@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import styles from './Projects.css';
 import {Table, Button} from 'react-bootstrap';
-import {setProject} from '../../ducks/editProject.js';
+import {setProject, deleteProject, getUsersProjectsById} from '../../ducks/projects.js';;
 import {browserHistory} from 'react-router';
 import ToggleDisplay from 'react-toggle-display';
 
@@ -16,7 +16,7 @@ let EditButton = React.createClass({
     );
   },
   _onClick() {
-    this.props.onItemClick(this.props.project);
+    this.props.onItemClick(this.props.project.id);
   }
 });
 
@@ -53,6 +53,13 @@ export default class Projects extends Component {
     browserHistory.push('editProject');
   }
 
+  handleDelete = id => {
+    let userId = this.props.auth.user.id;
+    // console.log(userId);
+    this.props.dispatch(deleteProject(id, userId));
+    // this.props.dispatch(getUsersProjectsById(this.props.auth.user.id));
+  }
+
   checkPermissions = permissions => {
     if (!permissions) return false;
     if (permissions.indexOf('write') > -1) {
@@ -62,7 +69,6 @@ export default class Projects extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    console.log('this.props.projects !!', this.props.projects);
     const self = this;
     if (nextProps.auth.user.permissions !== self.props.auth.user.permissions) {
       this.setState({
@@ -78,13 +84,15 @@ export default class Projects extends Component {
     })
     // templatize the projects to be placed into the Component
     let template = projects.map((project, idx) => {
+      // pull names out of categories
+      const categoryNames = project.categories.map(category => category.name).reduce((previousValue, currentValue) => {return previousValue + ',' + currentValue });
+
       return (
         <tr key={idx}>
           <td>{project.id}</td>
           <td>{project.name}</td>
           <td>{project.description}</td>
-          <td>{project.categories[0].name}</td>
-          <td>{project.categories[0].datatype.name}</td>
+          <td>{categoryNames}</td>
           <td><EditButton project={project} onItemClick={self.handleEdit}></EditButton></td>
           <ToggleDisplay show={self.state.isAuthorized} tag="td"
             className={styles._center}>
@@ -103,8 +111,7 @@ export default class Projects extends Component {
               <th>Id</th>
               <th>Name</th>
               <th>Description</th>
-              <th>Category</th>
-              <th>Datatype</th>
+              <th>Categories</th>
               <th>Edit</th>
               <th>Delete</th>
             </tr>
