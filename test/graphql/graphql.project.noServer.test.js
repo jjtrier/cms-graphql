@@ -93,10 +93,21 @@ describe('Graphql Project route testing, no server', () => {
   });
   describe('createProject', () => {
     it('it should create a project', done => {
-        const query = 'mutation{createProject(name:"Toast on a stick",description:"Immortalize Larry Bud Melman",categories:[1,2]){id,name,description,categories{id,name}}}';
-        graphql(Schema, query)
+      const projectMutation =
+      `(
+        name: $name,
+        description: $description,
+        categories: $categories
+      )`;
+      const projectSchema = `{id,name,description,categories{id,name}}`;
+      const variables = {
+        name: "Toast on a stick",
+        description: "Immortalize Larry Bud Melman",
+        categories: [1, 2]
+      };
+      const query = `mutation M($name: String!, $description: String, $categories: [Int]){createProject${projectMutation}${projectSchema}}`;
+      graphql(Schema, query, null, context, variables)
         .then(res => {
-          console.log('res', res);
           const project = res.data.createProject;
           expect(project).to.have.property('name');
           expect(project).to.have.property('description');
@@ -106,8 +117,7 @@ describe('Graphql Project route testing, no server', () => {
           expect(project.name).to.equal('Toast on a stick');
           expect(project.description).to.equal('Immortalize Larry Bud Melman');
           expect(project.description).to.be.a('string');
-          expect(project.categories[0].name).to.equal('assets');
-
+          expect(project.categories.length).to.equal(2);
           done();
         })
         .catch(err => {
@@ -116,19 +126,35 @@ describe('Graphql Project route testing, no server', () => {
         });
     });
   });
-  xdescribe('updateProject', () => {
+  describe('updateProject', () => {
     it('it should update a project', done => {
-        const query = 'mutation{updateProject(id:11,name:"Herding Cats",description:"A difficult task"){id,name,description}}';
-        graphql(Schema, query)
+      const projectMutation =
+      `(
+        id: $id,
+        name: $name,
+        description: $description,
+        categories: $categories
+      )`;
+      const projectSchema = `{id,name,description,categories{id,name}}`;
+      const variables = {
+        id: 11,
+        name: "Herding Cats",
+        description: "A difficult task",
+        categories: [3]
+      };
+      const query = `mutation M($id: Int!, $name: String, $description: String, $categories: [Int]){updateProject${projectMutation}${projectSchema}}`;
+      graphql(Schema, query, null, context, variables)
         .then(res => {
-          const project = res.data.createProject;
+          const project = res.data.updateProject;
           expect(project).to.have.property('name');
           expect(project).to.have.property('description');
           expect(project).to.have.property('id');
+          expect(project).to.have.property('categories');
           expect(project.name).to.be.a('string');
           expect(project.name).to.equal('Herding Cats');
           expect(project.description).to.equal('A difficult task');
           expect(project.description).to.be.a('string');
+          expect(project.categories.length).to.equal(1);
           done();
         })
         .catch(err => {
@@ -137,39 +163,19 @@ describe('Graphql Project route testing, no server', () => {
         });
     });
   });
-  // describe('updateProject', () => {
-  //   it('it should update a project', done => {
-  //     chai.request('http://localhost:3000')
-  //       .post('/graphql')
-  //       .set({Authorization: `Bearer ${authToken}`})
-  //       .send({
-  //         query: 'mutation{updateProject(id:3,name:"grease the wheels"){id,name,description}}'
-  //       })
-  //       .end((err, res) => {
-  //         // console.log('res.body.data.updateProject', res.body.data.updateProject);
-  //         res.should.have.status(200);
-  //         res.body.data.updateProject.should.be.a('object');
-  //         res.body.data.updateProject.name.should.equal('grease the wheels');
-  //         res.body.data.updateProject.description.should.equal('Flank ribeye sirloin, rump bresaola beef pancetta short ribs porchetta chuck frankfurter. Kevin ribeye meatball bresaola shank pork belly. Ham beef chicken ball tip, cow spare ribs biltong drumstick pork beef ribs.');
-  //         res.body.data.updateProject.id.should.equal(3);
-  //         if (err) console.log(err);
-  //         done();
-  //       });
-  //   });
-  // });
   describe('deleteProject', () => {
     it('it should delete a project', done => {
-        const query = 'mutation{deleteProject(id:11){id}}';
-        graphql(Schema, query)
-        .then(res => {
-          const project = res.data.deleteProject;
-          expect(project).to.have.property('id');
-          done();
-        })
-        .catch(err => {
-          console.log(error(err));
-          // done();
-        });
+      const query = 'mutation{deleteProject(id:11){id}}';
+      graphql(Schema, query)
+      .then(res => {
+        const project = res.data.deleteProject;
+        expect(project).to.have.property('id');
+        done();
+      })
+      .catch(err => {
+        console.log(error(err));
+        // done();
+      });
     });
   });
 }); // end testing block

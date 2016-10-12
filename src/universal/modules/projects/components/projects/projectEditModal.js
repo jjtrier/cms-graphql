@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react';
 import stylesToo from './projects.css';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {blue300, indigo900, green200} from 'material-ui/styles/colors';
-// import {updateDatatype} from '../../ducks/datatypesDucks.js';
+import {updateProject} from '../../ducks/projects.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
@@ -31,7 +31,7 @@ const idsFromCategories = fields => {
 export default class ProjectEditModal extends Component {
   static propTypes = {
     project: PropTypes.object,
-    // datatypes: PropTypes.array,
+    auth: PropTypes.object,
     categories: PropTypes.array,
     dispatch: PropTypes.func
   }
@@ -75,7 +75,8 @@ export default class ProjectEditModal extends Component {
       categories: idsFromCategories(this.state.categories)
     };
     JSON.stringify(newProjectInfo);
-    this.props.dispatch(updateProject(null, newProjectInfo));
+    let userId = this.props.auth.user.id;
+    this.props.dispatch(updateProject(userId, newProjectInfo));
   };
 // this handles the closing of the modal/dialog
   handleClose = () => {

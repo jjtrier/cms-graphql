@@ -3,6 +3,7 @@ import {fetchGraphQL} from '../../../utils/fetching';
 
 export const GET_PROJECTS = 'GET_PROJECTS';
 export const GET_PROJECTS_BY_USER = 'GET_PROJECTS_BY_USER';
+export const UPDATE_PROJECT = 'UPDATE_PROJECT';
 export const DELETE_PROJECT = 'DELETE_PROJECT';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 
@@ -23,6 +24,10 @@ export function reducer(state = initialState, action) {
     case GET_PROJECTS_BY_USER:
       return state.merge({
         projects: fromJS(action.payload)
+      });
+    case UPDATE_PROJECT:
+      return state.merge({
+        project: fromJS(action.payload)
       });
     case GET_CATEGORIES:
       return state.merge({
@@ -118,6 +123,35 @@ export function getUsersProjectsById(id) {
     }
   };
 }
+// update a project
+export function updateProject(id, variables) {
+  const projectMutation =
+  `(
+    id: $id,
+    name: $name,
+    description: $description,
+    categories: $categories
+  )`;
+  const projectSchema = `{id,name,description,categories{id,name}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        mutation M($id: Int!, $name: String, $description: String, $categories: [Int]){
+          updateProject
+          ${projectMutation}
+          ${projectSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: UPDATE_PROJECT,
+        payload: data.updateProject
+      });
+      await dispatch(getUsersProjectsById(id));
+    }
+  };
+}
 // delete a Project
 export function deleteProject(id, userId) {
   const projectMutation =
@@ -142,7 +176,7 @@ export function deleteProject(id, userId) {
 //
 export function getAllCategories() {
   const categorySchema =
-  `{id,name,visible,datatype{name},entries{id,title}}`;
+  `{id,name,visible,entries{id,title}}`;
   return async(dispatch, getState) => {
     const query = `
         query {

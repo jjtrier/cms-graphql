@@ -26,22 +26,8 @@ export default {
         description: args.description
       })
       .then(project => {
-        createdProject = project;
-        return;
-      })
-      .then(() => {
-        let categoriesPromises = [];
-        args.categories.forEach(id => {
-          categoriesPromises.push(Db.models.category.findById(id));
-        })
-        return promise.each(categoriesPromises, () => {});
-      })
-      .then(categories => {
-        return createdProject.setCategories(categories);
-      })
-      .then(() => {
-        return createdProject;
-      })
+        return setCategories(project, args.categories);
+      });
     }
   },
   updateProject: {
@@ -51,7 +37,7 @@ export default {
         type: new GraphQLNonNull(GraphQLInt)
       },
       name: {
-        type: new GraphQLNonNull(GraphQLString)
+        type: GraphQLString
       },
       description: {
         type: GraphQLString
@@ -62,8 +48,18 @@ export default {
     },
     async resolve(source, args) {
       const projectFound = await Db.models.project.findById(args.id);
-      const updatedProject = await projectFound.update({name: args.name});
+      let toUpdateProject = {};
+      const keysArray = Object.keys(args);
+      keysArray.forEach(key => {
+        if ( (args[key] !== undefined) && key !== 'id' && key !== 'fields') {
+          toUpdateProject[key] = args[key];
+        }
+      });
+      const updatedProject = await projectFound.update(toUpdateProject);
       if (updatedProject.error) console.error(updatedProject.error);
+      if (args.categories !== undefined) {
+        return setCategories(updatedProject, args.categories);
+      }
       return updatedProject;
     }
   },
@@ -79,4 +75,18 @@ export default {
       return projectFound.destroy();
     }
   }
+};
+
+const setCategories = (createdProject, categoryIds) => {
+  let categoriesPromises = [];
+  categoryIds.forEach(id => {
+    categoriesPromises.push(Db.models.category.findById(id));
+  });
+  return promise.each(categoriesPromises, () => {})
+  .then(categories => {
+    return createdProject.setCategories(categories);
+  })
+  .then(() => {
+    return createdProject;
+  });
 };

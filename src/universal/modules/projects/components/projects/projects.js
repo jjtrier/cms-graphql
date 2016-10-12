@@ -97,6 +97,7 @@ export default class Projects extends Component {
           <ToggleDisplay show={self.state.isAuthorized} tag="td"
             className={styles._center}>
             <ProjectEditModal project={project}
+              auth={self.props.auth}
               categories={self.props.categories}
               dispatch={self.props.dispatch}/>
           </ToggleDisplay>
