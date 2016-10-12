@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import styles from './Projects.css';
+import styles from './projects.css';
 import {Table, Button} from 'react-bootstrap';
+import ProjectEditModal from './projectEditModal.js';
 import {setProject, deleteProject, getUsersProjectsById} from '../../ducks/projects.js';;
 import {browserHistory} from 'react-router';
 import ToggleDisplay from 'react-toggle-display';
@@ -38,6 +39,7 @@ let DeleteButton = React.createClass({
 export default class Projects extends Component {
   static propTypes = {
     projects: PropTypes.array,
+    categories: PropTypes.array,
     dispatch: PropTypes.func,
     auth: PropTypes.object
   }
@@ -55,7 +57,6 @@ export default class Projects extends Component {
 
   handleDelete = id => {
     let userId = this.props.auth.user.id;
-    // console.log(userId);
     this.props.dispatch(deleteProject(id, userId));
     // this.props.dispatch(getUsersProjectsById(this.props.auth.user.id));
   }
@@ -93,7 +94,12 @@ export default class Projects extends Component {
           <td>{project.name}</td>
           <td>{project.description}</td>
           <td>{categoryNames}</td>
-          <td><EditButton project={project} onItemClick={self.handleEdit}></EditButton></td>
+          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+            className={styles._center}>
+            <ProjectEditModal project={project}
+              categories={self.props.categories}
+              dispatch={self.props.dispatch}/>
+          </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td"
             className={styles._center}>
             <DeleteButton project={project} onItemClick={self.handleDelete}></DeleteButton>

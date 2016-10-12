@@ -6,7 +6,7 @@ import {green200} from 'material-ui/styles/colors';
 export const DeletableChip = React.createClass({
   propTypes: {
     onDeleteClick: PropTypes.func,
-    field: PropTypes.object
+    category: PropTypes.object
   },
   render() {
     return (
@@ -14,19 +14,19 @@ export const DeletableChip = React.createClass({
         onRequestDelete={this._onClick}
         backgroundColor={green200}
         style={styles.chip}>
-        {this.props.field.name}
+        {this.props.category.name}
       </Chip>
     );
   },
   _onClick() {
-    this.props.onDeleteClick(this.props.field.id);
+    this.props.onDeleteClick(this.props.category.id);
   }
 });
 
 export const AddableChip = React.createClass({
   propTypes: {
     onAddClick: PropTypes.func,
-    field: PropTypes.object,
+    category: PropTypes.object,
     backgroundColor: PropTypes.string,
     count: PropTypes.number
   },
@@ -41,11 +41,11 @@ export const AddableChip = React.createClass({
         onTouchTap={this._onClick}
         backgroundColor={this.props.backgroundColor}
         style={styles.chip}>
-        {this.props.field.name} {count}
+        {this.props.category.name} {count}
       </Chip>
     );
   },
   _onClick() {
-    this.props.onAddClick(this.props.field);
+    this.props.onAddClick(this.props.category);
   }
 });

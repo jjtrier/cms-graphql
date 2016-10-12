@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Projects from '../../components/projects/projects';
-import {getAllProjects, getUsersProjectsById} from '../../ducks/projects.js';
+import {getAllProjects, getUsersProjectsById, getAllCategories} from '../../ducks/projects.js';
 import {loginToken} from '../../../auth/ducks/auth.js'
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -20,6 +20,7 @@ export default class ProjectsContainer extends Component {
     const {dispatch} = props;
     // dispatch(getAllProjects());
     dispatch(loginToken());
+    dispatch(getAllCategories());
     dispatch(getUsersProjectsById(props.auth.user.id));
   }
 

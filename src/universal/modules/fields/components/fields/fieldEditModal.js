@@ -151,11 +151,12 @@ export default class FieldEditModal extends Component {
       );
 // end template items
     });
+    const editFieldName = (`Edit Field: ${this.state.id}`);
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Field</Button>
         <Dialog
-          title="Edit Field"
+          title={editFieldName}
           autoDetectWindowHeight={true}
           autoScrollBodyContent={true}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}

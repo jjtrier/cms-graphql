@@ -1,9 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 // import keydown from 'react-keydown';
-import stylesToo from './datatypes.css';
+import stylesToo from './projects.css';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
 import {blue300, indigo900, green200} from 'material-ui/styles/colors';
-import {updateDatatype} from '../../ducks/datatypesDucks.js';
+// import {updateDatatype} from '../../ducks/datatypesDucks.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
@@ -20,7 +20,7 @@ const chosenChecker = (item, checkAgainst) => {
   return {result: res, count};
 };
 
-const idsFromFields = fields => {
+const idsFromCategories = fields => {
   let ids = [];
   for (let i = 0; i < fields.length; i++) {
     ids.push(fields[i].id);
@@ -28,20 +28,19 @@ const idsFromFields = fields => {
   return ids;
 };
 
-export default class DatatypeEditModal extends Component {
+export default class ProjectEditModal extends Component {
   static propTypes = {
-    datatype: PropTypes.object,
-    datatypes: PropTypes.array,
-    fields: PropTypes.array,
+    project: PropTypes.object,
+    // datatypes: PropTypes.array,
+    categories: PropTypes.array,
     dispatch: PropTypes.func
   }
   state = {
     open: false,
-    id: this.props.datatype.id,
-    name: this.props.datatype.name,
-    description: this.props.datatype.description,
-    visible: this.props.datatype.visible,
-    fields: this.props.datatype.fields,
+    id: this.props.project.id,
+    name: this.props.project.name,
+    description: this.props.project.description,
+    categories: this.props.project.categories,
     errorText: ''
   };
 
@@ -54,15 +53,13 @@ export default class DatatypeEditModal extends Component {
   };
 
   handleRequestChipDelete = id => {
-    let newFields = [];
-    newFields = this.state.fields.filter(field => field.id !== id);
-    this.setState({fields: newFields});
+    let newCategories = [];
+    newCategories = this.state.categories.filter(category => category.id !== id);
+    this.setState({categories: newCategories});
   }
-  handleChipAdd = field => {
-    this.setState({fields: this.state.fields.concat([field])});
+  handleChipAdd = category => {
+    this.setState({categories: this.state.categories.concat([category])});
   }
-
-  handleChangeVisible = (event, index, value) => this.setState({visible: value});
 
   handleOpen = () => {
     this.setState({open: true});
@@ -71,21 +68,20 @@ export default class DatatypeEditModal extends Component {
   handleSubmit = () => {
     this.setState({open: false});
 
-    let newDatatypeInfo = {
+    let newProjectInfo = {
       id: this.state.id,
       name: this.state.name,
       description: this.state.description,
-      visible: this.state.visible,
-      fields: idsFromFields(this.state.fields)
+      categories: idsFromCategories(this.state.categories)
     };
-    JSON.stringify(newDatatypeInfo);
-    this.props.dispatch(updateDatatype(null, newDatatypeInfo));
+    JSON.stringify(newProjectInfo);
+    this.props.dispatch(updateProject(null, newProjectInfo));
   };
 // this handles the closing of the modal/dialog
   handleClose = () => {
     this.setState({
       open: false,
-      fields: this.props.datatype.fields
+      categories: this.props.project.categories
     });
   };
 
@@ -103,19 +99,19 @@ export default class DatatypeEditModal extends Component {
     ];
     // templatize the fields to be chips in Component
     const self = this;
-    let allFields = this.props.fields;
-    let fields = this.state.fields;
-    let templateStoredFields = fields.map((field, idx) => {
+    let allCategories = this.props.categories;
+    let categories = this.state.categories;
+    let templateStoredCategories = categories.map((category, idx) => {
       return (
         <ListGroupItem key={idx}>
-          <DeletableChip field={field} onDeleteClick={self.handleRequestChipDelete}></DeletableChip>
+          <DeletableChip category={category} onDeleteClick={self.handleRequestChipDelete}></DeletableChip>
         </ListGroupItem>
       );
     });
     // templatize all available fields to be chips in Component
-    let templateAllFields = allFields.map((field, idx) => {
+    let templateAllCategories = allCategories.map((category, idx) => {
       let backgroundColor = blue300;
-      let check = chosenChecker(field, this.state.fields);
+      let check = chosenChecker(category, this.state.categories);
       if (check.result === true) {
         backgroundColor = green200;
       }
@@ -123,19 +119,19 @@ export default class DatatypeEditModal extends Component {
         <ListGroupItem key={idx}>
           <AddableChip
             backgroundColor={backgroundColor}
-            field={field}
+            category={category}
             count={check.count}
             onAddClick={self.handleChipAdd}>
           </AddableChip>
         </ListGroupItem>
       );
     });
-    const editDatatypeName = (`Edit Datatype: ${this.state.id}`);
+    const editProjectName = (`Edit Project: ${this.state.id}`);
     return (
       <div>
-        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Datatype</Button>
+        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Project</Button>
         <Dialog
-          title={editDatatypeName}
+          title={editProjectName}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
           <div>
@@ -152,22 +148,19 @@ export default class DatatypeEditModal extends Component {
                 id="description"
                 value={this.state.description}
                 onChange={this.handleChange}
+                name="Description"
                 />
-              <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
-                <MenuItem key={1} value={true} primaryText={'Visible'}/>
-                <MenuItem key={2} value={false} primaryText={'Hidden'}/>
-              </SelectField>
             </div>
             <Divider/>
           </div>
-          {/* diplay fields */}
-          <h4>Fields</h4>
+          {/* diplay categories */}
+          <h4>Categories</h4>
           <div style={styles.wrapper}>
             <ListGroup>
-              {templateAllFields}
+              {templateAllCategories}
             </ListGroup>
             <ListGroup>
-              {templateStoredFields}
+              {templateStoredCategories}
             </ListGroup>
           </div>
         </Dialog>

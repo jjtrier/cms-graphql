@@ -12,3 +12,11 @@
   margin-top: 5px;
   margin-bottom: 5px
 }
+
+._bottomPadding {
+  margin-bottom: 10px
+}
+
+._center {
+  text-align: center;
+}

@@ -5,12 +5,14 @@ export const GET_PROJECTS = 'GET_PROJECTS';
 export const GET_PROJECTS_BY_USER = 'GET_PROJECTS_BY_USER';
 export const SET_PROJECT = 'SET_PROJECT';
 export const DELETE_PROJECT = 'DELETE_PROJECT';
+export const GET_CATEGORIES = 'GET_CATEGORIES';
 
 export const PROJECTS = 'projects';
 
 const initialState = iMap({
   projects: iList(),
-  project: iMap()
+  project: iMap(),
+  categories: iList()
 });
 
 export function reducer(state = initialState, action) {
@@ -26,6 +28,10 @@ export function reducer(state = initialState, action) {
     case SET_PROJECT:
       return state.merge({
         project: fromJS(action.payload)
+      });
+    case GET_CATEGORIES:
+      return state.merge({
+        categories: fromJS(action.payload)
       });
     case DELETE_PROJECT:
     default:
@@ -141,6 +147,27 @@ export function deleteProject(id, userId) {
         payload: data.deleteProject
       });
       await dispatch(getUsersProjectsById(userId));
+    }
+  };
+}
+//
+export function getAllCategories() {
+  const categorySchema =
+  `{id,name,visible,datatype{name},entries{id,title}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        query {
+          getAllCategories
+          ${categorySchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      dispatch({
+        type: GET_CATEGORIES,
+        payload: data.getAllCategories
+      });
     }
   };
 }
