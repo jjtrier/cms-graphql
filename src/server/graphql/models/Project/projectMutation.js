@@ -1,5 +1,7 @@
-import {GraphQLString, GraphQLNonNull, GraphQLInt} from 'graphql';
+import {GraphQLString, GraphQLNonNull, GraphQLInt, GraphQLList} from 'graphql';
 import {Project} from './projectSchema.js';
+import {Category} from './projectSchema.js';
+import promise from 'bluebird';
 
 import Db from '../../../database/setupDB.js';
 
@@ -12,14 +14,34 @@ export default {
       },
       description: {
         type: GraphQLString
+      },
+      categories: {
+        type: new GraphQLList(GraphQLInt)
       }
     },
     async resolve(source, args) {
-      const createdProject = await Db.models.project.create({
+      let createdProject = {};
+      return Db.models.project.create({
         name: args.name,
         description: args.description
-      });
-      return createdProject;
+      })
+      .then(project => {
+        createdProject = project;
+        return;
+      })
+      .then(() => {
+        let categoriesPromises = [];
+        args.categories.forEach(id => {
+          categoriesPromises.push(Db.models.category.findById(id));
+        })
+        return promise.each(categoriesPromises, () => {});
+      })
+      .then(categories => {
+        return createdProject.setCategories(categories);
+      })
+      .then(() => {
+        return createdProject;
+      })
     }
   },
   updateProject: {
@@ -33,6 +55,9 @@ export default {
       },
       description: {
         type: GraphQLString
+      },
+      categories: {
+        type: new GraphQLList(GraphQLInt)
       }
     },
     async resolve(source, args) {

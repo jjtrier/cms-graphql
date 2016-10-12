@@ -93,7 +93,32 @@ describe('Graphql Project route testing, no server', () => {
   });
   describe('createProject', () => {
     it('it should create a project', done => {
-        const query = 'mutation{createProject(name:"Toast on a stick",description:"Immortalize Larry Bud Melman"){id,name,description}}';
+        const query = 'mutation{createProject(name:"Toast on a stick",description:"Immortalize Larry Bud Melman",categories:[1,2]){id,name,description,categories{id,name}}}';
+        graphql(Schema, query)
+        .then(res => {
+          console.log('res', res);
+          const project = res.data.createProject;
+          expect(project).to.have.property('name');
+          expect(project).to.have.property('description');
+          expect(project).to.have.property('id');
+          expect(project).to.have.property('categories');
+          expect(project.name).to.be.a('string');
+          expect(project.name).to.equal('Toast on a stick');
+          expect(project.description).to.equal('Immortalize Larry Bud Melman');
+          expect(project.description).to.be.a('string');
+          expect(project.categories[0].name).to.equal('assets');
+
+          done();
+        })
+        .catch(err => {
+          console.log(error(err));
+          // done();
+        });
+    });
+  });
+  xdescribe('updateProject', () => {
+    it('it should update a project', done => {
+        const query = 'mutation{updateProject(id:11,name:"Herding Cats",description:"A difficult task"){id,name,description}}';
         graphql(Schema, query)
         .then(res => {
           const project = res.data.createProject;
@@ -101,8 +126,8 @@ describe('Graphql Project route testing, no server', () => {
           expect(project).to.have.property('description');
           expect(project).to.have.property('id');
           expect(project.name).to.be.a('string');
-          expect(project.name).to.equal('Toast on a stick');
-          expect(project.description).to.equal('Immortalize Larry Bud Melman');
+          expect(project.name).to.equal('Herding Cats');
+          expect(project.description).to.equal('A difficult task');
           expect(project.description).to.be.a('string');
           done();
         })
@@ -112,25 +137,6 @@ describe('Graphql Project route testing, no server', () => {
         });
     });
   });
-  // describe('getProjectsUsersByProjectId', () => {
-  //   it('it should get a projects users by the project id', done => {
-  //     chai.request('http://localhost:3000')
-  //       .post('/graphql')
-  //       .set({Authorization: `Bearer ${authToken}`})
-  //       .send({
-  //         query: "query{getProjectsUsersByProjectId(id:1){id,email}}"
-  //       })
-  //       .end((err, res) => {
-  //         const users = res.body.data.getProjectsUsersByProjectId;
-  //         res.should.have.status(200);
-  //         users.should.be.a('array');
-  //         users.length.should.equal(5);
-  //         users[2].should.have.property('email');
-  //         if (err) console.log(err);
-  //         done();
-  //       });
-  //   });
-  // });
   // describe('updateProject', () => {
   //   it('it should update a project', done => {
   //     chai.request('http://localhost:3000')
@@ -151,20 +157,19 @@ describe('Graphql Project route testing, no server', () => {
   //       });
   //   });
   // });
-  // describe('deleteProject', () => {
-  //   it('it should delete a project', done => {
-  //     chai.request('http://localhost:3000')
-  //       .post('/graphql')
-  //       .set({Authorization: `Bearer ${authToken}`})
-  //       .send({
-  //         query: 'mutation{deleteProject(id:4){id,name}}'
-  //       })
-  //       .end((err, res) => {
-  //         res.should.have.status(200);
-  //         res.body.data.deleteProject.should.be.a('object');
-  //         if (err) console.log(err);
-  //         done();
-  //       });
-  //   });
-  // });
+  describe('deleteProject', () => {
+    it('it should delete a project', done => {
+        const query = 'mutation{deleteProject(id:11){id}}';
+        graphql(Schema, query)
+        .then(res => {
+          const project = res.data.deleteProject;
+          expect(project).to.have.property('id');
+          done();
+        })
+        .catch(err => {
+          console.log(error(err));
+          // done();
+        });
+    });
+  });
 }); // end testing block
