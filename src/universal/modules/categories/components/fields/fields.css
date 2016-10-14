@@ -13,6 +13,16 @@
   margin-bottom: 5px
 }
 
+._topWrapper {
+  color: red;
+  display: flex;
+  justifyContent: 'space-around'
+}
+
+._smallerText {
+  color: red;
+  fontSize: .6em
+}
 ._bottomPadding {
   margin-bottom: 10px
 }

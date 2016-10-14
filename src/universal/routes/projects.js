@@ -5,7 +5,7 @@ import {resolvePromiseMap} from 'universal/utils/promises';
 
 export default function (store) {
   return {
-    path: 'projects',
+    path: 'projects(:user)',
     component: LandingContainer,
     getIndexRoute: async (location, cb) => {
       const promiseMap = setImports();

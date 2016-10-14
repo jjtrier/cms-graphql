@@ -1,36 +1,35 @@
 import React, {Component, PropTypes} from 'react';
-import EditProject from '../../components/editProject/editProject';
-// import {getAllProjects, getUsersProjectsById} from '../../ducks/projects.js';
+import Fields from '../../components/fields/fields';
+import {getFields} from '../../ducks/fieldsDucks.js';
 import {loginToken} from '../../../auth/ducks/auth.js'
-// import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import {ensureState} from 'redux-optimistic-ui';
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ProjectsContainer extends Component {
+export default class DatatypesContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
     dispatch: PropTypes.func,
-    project: PropTypes.object
+    fields: PropTypes.object
   }
 
   constructor(props) {
     super(props);
     const {dispatch} = props;
     dispatch(loginToken());
+    dispatch(getFields());
   }
-
   render() {
-    return <EditProject {...this.props} {...this.props.project} {...this.props.auth}/>;
+    return <Fields {...this.props} {...this.props.fields} {...this.props.auth}/>;
   }
 }
 
 function mapStateToProps(state) {
   state = ensureState(state);
-  // console.log('state',state);
+  // console.log('stuff', state.get('fields').toJS());
   return {
-    project: state.get('project').toJS(),
+    fields: state.get('fields').toJS(),
     auth: state.get('auth').toJS()
   };
 }
