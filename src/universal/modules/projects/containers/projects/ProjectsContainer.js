@@ -12,7 +12,8 @@ export default class ProjectsContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
     dispatch: PropTypes.func,
-    data: PropTypes.object
+    data: PropTypes.object,
+    params: PropTypes.object
   }
 
   constructor(props) {
@@ -21,9 +22,10 @@ export default class ProjectsContainer extends Component {
     // dispatch(getAllProjects());
     dispatch(loginToken());
     dispatch(getAllCategories());
-    dispatch(getUsersProjectsById(props.auth.user.id));
+    // dispatch(getAllProjects());
+    // dispatch(getUsersProjectsById(props.auth.user.id));
+    dispatch(getUsersProjectsById(Number(this.props.params.user) || props.auth.user.id));
   }
-
   render() {
     return <Projects {...this.props} {...this.props.data} {...this.props.auth}/>;
   }

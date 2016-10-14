@@ -29,6 +29,10 @@ const idsFromFields = fields => {
 };
 
 export default class DatatypeEditModal extends Component {
+  constructor(props) {
+    super(props);
+    window.addEventListener('keydown', this._handleEscKey, false);
+  }
   static propTypes = {
     datatype: PropTypes.object,
     datatypes: PropTypes.array,
@@ -44,7 +48,14 @@ export default class DatatypeEditModal extends Component {
     fields: this.props.datatype.fields,
     errorText: ''
   };
-
+  _handleEscKey = event => {
+    if (event.keyCode === 27) {
+      this.handleClose();
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._handleEscKey, false);
+  }
 // this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;

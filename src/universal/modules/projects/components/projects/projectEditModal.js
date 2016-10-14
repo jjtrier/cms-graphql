@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-// import keydown from 'react-keydown';
-import stylesToo from './projects.css';
-import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
-import {blue300, indigo900, green200} from 'material-ui/styles/colors';
+import {Dialog, FlatButton, TextField, Divider} from 'material-ui';
+import {blue300, green200} from 'material-ui/styles/colors';
 import {updateProject} from '../../ducks/projects.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
@@ -29,6 +27,10 @@ const idsFromCategories = fields => {
 };
 
 export default class ProjectEditModal extends Component {
+  constructor(props) {
+    super(props);
+    window.addEventListener('keydown', this._handleEscKey, false);
+  }
   static propTypes = {
     project: PropTypes.object,
     auth: PropTypes.object,
@@ -43,7 +45,14 @@ export default class ProjectEditModal extends Component {
     categories: this.props.project.categories,
     errorText: ''
   };
-
+  _handleEscKey = event => {
+    if (event.keyCode === 27) {
+      this.handleClose();
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._handleEscKey, false);
+  }
 // this handles any changes to the inputs
   handleChange = event => {
     const lineKey = event.target.id;

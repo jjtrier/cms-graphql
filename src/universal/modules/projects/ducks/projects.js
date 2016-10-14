@@ -70,6 +70,7 @@ export function getAllProjects() {
     if (error) {
       console.error(error);
     } else {
+      console.log('made it here', data.getAllProjects);
       dispatch({
         type: GET_PROJECTS,
         payload: data.getAllProjects

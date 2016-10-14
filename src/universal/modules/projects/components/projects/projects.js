@@ -58,7 +58,6 @@ export default class Projects extends Component {
   handleDelete = id => {
     let userId = this.props.auth.user.id;
     this.props.dispatch(deleteProject(id, userId));
-    // this.props.dispatch(getUsersProjectsById(this.props.auth.user.id));
   }
 
   checkPermissions = permissions => {
@@ -86,7 +85,10 @@ export default class Projects extends Component {
     // templatize the projects to be placed into the Component
     let template = projects.map((project, idx) => {
       // pull names out of categories
-      const categoryNames = project.categories.map(category => category.name).reduce((previousValue, currentValue) => {return previousValue + ',' + currentValue });
+      let categoryNames = [];
+      if (project.categories.length > 0 ) {
+        categoryNames = project.categories.map(category => category.name).reduce((previousValue, currentValue) => {return previousValue + ',' + currentValue });
+      } else {categoryNames = <div>none...</div>;}
 
       return (
         <tr key={idx}>
