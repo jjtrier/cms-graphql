@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import styles from './categories.css';
 import {Table, Button} from 'react-bootstrap';
-// import FieldEditModal from './fieldEditModal.js';
+import CategoryEditModal from './categoryEditModal.js';
 // import FieldCreateModal from './fieldCreateModal.js';
 import {deleteCategory, getAllCategories} from '../../ducks/categoriesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
@@ -25,7 +25,8 @@ export default class Categories extends Component {
   static propTypes = {
     categories: PropTypes.array,
     dispatch: PropTypes.func,
-    auth: PropTypes.object
+    auth: PropTypes.object,
+    datatypes: PropTypes.array
   }
 
   state = {
@@ -71,6 +72,11 @@ export default class Categories extends Component {
           <td>{category.name}</td>
           <td>{category.datatype.name}</td>
           <td>{entries}...</td>
+            <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
+              <CategoryEditModal category={category}
+                datatypes={self.props.datatypes}
+                dispatch={self.props.dispatch}/>
+            </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td"
             className={styles._center}>
             <DeleteButton category={category} onItemClick={self.handleDelete}></DeleteButton>
@@ -90,6 +96,7 @@ export default class Categories extends Component {
               <th>Datatype</th>
               <th>Entry Titles</th>
               <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -103,8 +110,8 @@ export default class Categories extends Component {
 
 const processEntries = category => {
   let entries = [];
-  for (var i = 0; i < category.entries.length; i++) {
+  for (let i = 0; i < category.entries.length; i++) {
     entries.push(category.entries[i].title)
   }
   return entries.join().substring(0,30);
-}
+};

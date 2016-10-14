@@ -5,10 +5,12 @@ export const GET_CATEGORIES = 'GET_CATEGORIES';
 // export const UPDATE_FIELD = 'UPDATE_FIELD';
 // export const CREATE_FIELD = 'CREATE_FIELD';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
+export const GET_DATATYPES = 'GET_DATATYPES';
 
 const initialState = iMap({
   categories: iList(),
-  category: iMap()
+  category: iMap(),
+  datatypes: iList()
 });
 
 export function reducer(state = initialState, action) {
@@ -16,6 +18,10 @@ export function reducer(state = initialState, action) {
     case GET_CATEGORIES:
       return state.merge({
         categories: fromJS(action.payload)
+      });
+    case GET_DATATYPES:
+      return state.merge({
+        datatypes: fromJS(action.payload)
       });
     // case UPDATE_FIELD:
     // case CREATE_FIELD:
@@ -27,16 +33,17 @@ export function reducer(state = initialState, action) {
       return state;
   }
 }
-// get all fields
+// get all categories
 //
 export function getAllCategories() {
-  const categorySchema = `{id,name,visible,datatype{name,description,fields{id,name,description,dataJSON}},entries{id,title,data}}`;
+  const categorySchema = `{id,name,visible,datatype{id,name,description,fields{id,name,description,dataJSON}},entries{id,title,data}}`;
+  const datatypesRequest = `getAllDatatypes{id,name,description,visible,fields{id,name,description}}`
   return async(dispatch, getState) => {
     const query = `
         query {
           getAllCategories
           ${categorySchema}
-        }`;
+        ${datatypesRequest}} `;
     const {error, data} = await fetchGraphQL({query});
     if (error) {
       console.error(error);
@@ -45,11 +52,14 @@ export function getAllCategories() {
         type: GET_CATEGORIES,
         payload: data.getAllCategories
       });
+      dispatch({
+        type: GET_DATATYPES,
+        payload: data.getAllDatatypes
+      })
     }
   };
 }
-
-// delete a Field
+// delete a category
 export function deleteCategory(id) {
   const categoryMutation =
   `(id:${id})`;
@@ -69,4 +79,29 @@ export function deleteCategory(id) {
       await dispatch(getAllCategories());
     }
   };
-};
+}
+
+export function updateCategory(id) {
+  return id;
+}
+// get all datatypes
+export function getDatatypes() {
+  const datatypeSchema =
+  `{id,name,description,visible,fields{id,name,description}}`;
+  return async(dispatch, getState) => {
+    const query = `
+        query {
+          getAllDatatypes
+          ${datatypeSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    } else {
+      dispatch({
+        type: GET_DATATYPES,
+        payload: data.getAllDatatypes
+      });
+    }
+  };
+}

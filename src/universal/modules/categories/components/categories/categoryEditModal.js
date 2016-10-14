@@ -1,28 +1,29 @@
 /* eslint-disable pref-const */
 import React, {Component, PropTypes} from 'react';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
-import {updateField} from '../../ducks/fieldsDucks.js';
+import {updateCategory} from '../../ducks/categoriesDucks.js';
 import {Table, Button} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 
-export default class FieldEditModal extends Component {
+export default class CategoryEditModal extends Component {
   constructor(props) {
     super(props);
     window.addEventListener('keydown', this._handleEscKey, false);
   }
   static propTypes = {
-    field: PropTypes.object,
-    dispatch: PropTypes.func
+    category: PropTypes.object,
+    dispatch: PropTypes.func,
+    datatypes: PropTypes.array
   }
   state = {
     open: false,
-    id: this.props.field.id,
-    name: this.props.field.name,
-    description: this.props.field.description,
-    required: this.props.field.required,
-    dataJSON: convertDataJSONtoMaps(this.props.field.dataJSON),
+    id: this.props.category.id,
+    name: this.props.category.name,
+    datatype: this.props.category.datatype,
+    datatypes: this.props.datatypes,
+    visible: this.props.category.visible,
     errorText: '',
-    newFieldCount: 0
+    newCategoryCount: 0
   };
   _handleEscKey = event => {
     if (event.keyCode === 27) {
@@ -40,46 +41,8 @@ export default class FieldEditModal extends Component {
     });
   };
 
-  handleChangeKey = event => {
-    let newKey = event.target.value;
-    const id = event.target.id;
-    const idx = id.slice(0, id.indexOf(":"));
-    const oldKey = id.slice(id.indexOf(":") + 1);
-    let previousState = this.state.dataJSON;
-    let previousMap = previousState[idx];
-    const storedValue = previousMap.get(oldKey);
-    previousMap.set(newKey, storedValue);
-    previousMap.delete(oldKey);
-    previousState[idx] = previousMap;
-    this.setState(
-      {dataJSON: previousState}
-    );
-  }
-
-  handleChangeValue = event => {
-    let newValue = event.target.value;
-    const id = event.target.id;
-    const idx = id.slice(0, id.indexOf(":"));
-    const key = id.slice(id.indexOf(":") + 1);
-    let previousState = this.state.dataJSON;
-    let previousMap = previousState[idx];
-    previousMap.set(key, newValue);
-    previousState[idx] = previousMap;
-    this.setState(
-      {dataJSON: previousState}
-    );
-  }
-
-  handleFieldDelete = event => {
-    const idx = event.target.id;
-    let previousState = this.state.dataJSON;
-    previousState.splice([idx], 1);
-    this.setState(
-      {dataJSON: previousState}
-    );
-  }
-
-  handleChangeRequired = (event, index, value) => this.setState({required: value});
+  handleChangeVisible = (event, index, value) => this.setState({required: value});
+  handleChangeDatatype = (event, index, value) => this.setState({required: value});
 
   handleOpen = () => {
     this.setState({open: true});
@@ -87,36 +50,22 @@ export default class FieldEditModal extends Component {
 
   handleSubmit = () => {
     this.setState({open: false});
-    let updateFieldInfo = {
+    let updateCategoryInfo = {
       id: this.state.id,
       name: this.state.name,
-      description: this.state.description,
-      required: this.state.required,
-      dataJSON: this.state.dataJSON
+      datatype: this.state.datatype,
+      visible: this.state.visible
     };
-    updateFieldInfo.dataJSON = convertMapsToObjects(updateFieldInfo.dataJSON);
-    updateFieldInfo.dataJSON = JSON.stringify(updateFieldInfo.dataJSON);
-    this.props.dispatch(updateField(null, updateFieldInfo));
+    updateCategoryInfo = JSON.stringify(updateCategoryInfo);
+    this.props.dispatch(updateCategory(updateCategoryInfo));
   };
 // this handles the closing of the modal/dialog
   handleClose = () => {
     this.setState({
       open: false,
-      field: this.props.field,
-      dataJSON: convertDataJSONtoMaps(this.props.field.dataJSON)
+      category: this.props.category
     });
   };
-  // handles adding another key/value Pair
-  addKeyValue = () => {
-    let newdataJSON = this.state.dataJSON;
-    const newMap = new Map();
-    newMap.set(this.state.newFieldCount.toString(), '_');
-    newdataJSON.push(newMap);
-    this.setState({
-      dataJSON: newdataJSON
-    });
-    this.state.newFieldCount++;
-  }
 
   render() {
     // these are used by the modal
@@ -132,107 +81,40 @@ export default class FieldEditModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
-    let dataJSON = this.state.dataJSON;
 
-    let templateFromDataJSON = dataJSON.map((line, idx) => {
-      let key = line.keys().next().value;
-      let value = line.get(key);
-      let idKey = (`${idx}:${key}`);
-      return (
-        <tr key={idx}>
-          <td>
-            <TextField
-              id={idKey}
-              value={key}
-              onChange={this.handleChangeKey}
-              name="Key"
-              />
-          </td>
-          <td>
-            <TextField
-              id={idKey}
-              value={value}
-              onChange={this.handleChangeValue}
-              name="Value"
-              />
-          </td>
-          <td>
-            <Button bsStyle="danger" bsSize="xsmall" id={idx} onTouchTap={this.handleFieldDelete}>Delete Row</Button>
-          </td>
-        </tr>
-      );
-// end template items
-    });
-    const editFieldName = (`Edit Field: ${this.state.id}`);
+    const editCategoryName = (`Edit Category: ${this.state.id}`);
+    console.log('this.state !!', this.state);
     return (
       <div>
-        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Field</Button>
+        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Category</Button>
         <Dialog
-          title={editFieldName}
+          title={editCategoryName}
           autoDetectWindowHeight={true}
           autoScrollBodyContent={true}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
           <div>
             <div style={styles.wrapper}>
-            <TextField
-              floatingLabelText="Name"
-              id="name"
-              value={this.state.name}
-              onChange={this.handleChange}
-              name="Name"
-              />
-            <TextField
-              floatingLabelText="Description"
-              id="description"
-              value={this.state.description}
-              onChange={this.handleChange}
-              />
-            <SelectField value={this.state.required} id="requiredSel" onChange={this.handleChangeRequired} floatingLabelText="Required Status">
-              <MenuItem key={1} value={true} primaryText={'True'}/>
-              <MenuItem key={2} value={false} primaryText={'False'}/>
-            </SelectField>
+              <TextField
+                floatingLabelText="Name"
+                id="name"
+                value={this.state.name}
+                onChange={this.handleChange}
+                name="Name"
+                />
+              <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
+                <MenuItem key={1} value={true} primaryText={'True'}/>
+                <MenuItem key={2} value={false} primaryText={'False'}/>
+              </SelectField>
+              <SelectField value={this.state.datatype.id} id="datatypeSel" onChange={this.handleChangeDatatype} floatingLabelText="Datatype">
+                <MenuItem key={1} value={1} primaryText={'One'}/>
+                <MenuItem key={2} value={2} primaryText={'Two'}/>
+                <MenuItem key={3} value={3} primaryText={'Three'}/>
+              </SelectField>
             </div>
-            <Divider/>
-            <Table striped bordered condensed hover>
-              <thead>
-                <tr>
-                  <th>Key</th>
-                  <th>Value</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {templateFromDataJSON}
-              </tbody>
-            </Table>
-            <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.addKeyValue}>Add Key/Value Pair</Button>
           </div>
         </Dialog>
       </div>
     );
   }
-}
-const convertDataJSONtoMaps = dataJSON => {
-  let arrayOfJSONData = [];
-for (let key in dataJSON) {
-  let newMap = new Map();
-  if (dataJSON.hasOwnProperty(key)) {
-    newMap.set(key, dataJSON[key]);
-  }
-  arrayOfJSONData.push(newMap);
-}
-  return arrayOfJSONData;
-};
-const convertMapsToObjects = maps => {
-  let arr = [];
-  for (let i = 0; i < maps.length; i++) {
-    let newObject = {};
-    maps[i].forEach((value, key) => {
-      console.log(key + " = " + value);
-      newObject[key] = value;
-    }, maps[i])
-    arr.push(newObject);
-  }
-  return arr;
 }

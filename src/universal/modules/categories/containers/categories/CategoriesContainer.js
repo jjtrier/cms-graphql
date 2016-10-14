@@ -19,6 +19,7 @@ export default class CategoriesContainer extends Component {
     const {dispatch} = props;
     dispatch(loginToken());
     dispatch(getAllCategories());
+    // dispatch(getDatatypes());
   }
   render() {
     return <Categories {...this.props} {...this.props.categories} {...this.props.auth}/>;
