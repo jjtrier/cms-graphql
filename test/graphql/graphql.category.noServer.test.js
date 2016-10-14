@@ -32,7 +32,7 @@ describe('Graphql Category route testing, no server', () => {
 
   describe('getAllCategories', () => {
     it('it should get all the categories', done => {
-      const query = "query{getAllCategories{id,name,visible,datatype{name},entries{id,title}}}";
+      const query = "query{getAllCategories{id,name,visible,datatype{name,description,fields{id,name,description,dataJSON}},entries{id,title,data}}}";
       graphql(Schema, query)
       .then(res => {
         const categories = res.data.getAllCategories;

@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import {ensureState} from 'redux-optimistic-ui';
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class DatatypesContainer extends Component {
+export default class FieldsContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
     dispatch: PropTypes.func,

@@ -1,29 +1,29 @@
 import React, {Component, PropTypes} from 'react';
-import styles from './fields.css';
+import styles from './categories.css';
 import {Table, Button} from 'react-bootstrap';
-import FieldEditModal from './fieldEditModal.js';
-import FieldCreateModal from './fieldCreateModal.js';
-import {deleteField, getFields} from '../../ducks/fieldsDucks.js';
+// import FieldEditModal from './fieldEditModal.js';
+// import FieldCreateModal from './fieldCreateModal.js';
+import {deleteCategory, getAllCategories} from '../../ducks/categoriesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
 let DeleteButton = React.createClass({
   propTypes: {
     onItemClick: PropTypes.func,
-    field: PropTypes.object
+    category: PropTypes.object
   },
   render() {
     return (
-      <Button bsStyle="danger" bsSize="xsmall" onClick={this._onClick}>Delete Field</Button>
+      <Button bsStyle="danger" bsSize="xsmall" onClick={this._onClick}>Delete Category</Button>
     );
   },
   _onClick() {
-    this.props.onItemClick(this.props.field.id);
+    this.props.onItemClick(this.props.category.id);
   }
 });
 
-export default class Fields extends Component {
+export default class Categories extends Component {
   static propTypes = {
-    fields: PropTypes.array,
+    categories: PropTypes.array,
     dispatch: PropTypes.func,
     auth: PropTypes.object
   }
@@ -33,8 +33,8 @@ export default class Fields extends Component {
   }
 
   handleDelete = id => {
-    this.props.dispatch(deleteField(id));
-    this.props.dispatch(getFields());
+    this.props.dispatch(deleteCategory(id));
+    this.props.dispatch(getAllCategories());
   }
 
   checkPermissions = permissions => {
@@ -57,24 +57,23 @@ export default class Fields extends Component {
   render() {
     // sort fields by id
     const self = this;
-    const fields = this.props.fields.sort((a, b) => {
+    const categories = this.props.categories.sort((a, b) => {
       return parseFloat(a.id) - parseFloat(b.id);
     });
-    // templatize the fields to be placed in Component
-    let template = fields.map((field, idx) => {
+    // templatize the categories to be placed in Component
+    let template = categories.map((category, idx) => {
+      let entries = processEntries(category);
+      if(category.datatype === undefined || category.datatype === null) {
+        category.datatype = {name: 'no datatype'};}
       return (
         <tr key={idx}>
-          <td>{field.id}</td>
-          <td>{field.name}</td>
-          <td>{field.description}</td>
-          <td>{field.required.toString()}</td>
-            <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
-              <FieldEditModal field={field}
-                dispatch={self.props.dispatch}/>
-            </ToggleDisplay>
+          <td>{category.id}</td>
+          <td>{category.name}</td>
+          <td>{category.datatype.name}</td>
+          <td>{entries}...</td>
           <ToggleDisplay show={self.state.isAuthorized} tag="td"
             className={styles._center}>
-            <DeleteButton field={field} onItemClick={self.handleDelete}></DeleteButton>
+            <DeleteButton category={category} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
         </tr>
     );
@@ -82,18 +81,14 @@ export default class Fields extends Component {
 
     return (
       <div className={styles._container}>
-        <h1>Fields</h1>
-        <div className={styles._bottomPadding}>
-          <FieldCreateModal dispatch={self.props.dispatch}/>
-        </div>
+        <h1>Categories</h1>
         <Table striped bordered condensed hover>
           <thead>
             <tr>
               <th>Id</th>
               <th>Name</th>
-              <th>Description</th>
-              <th>Required</th>
-              <th></th>
+              <th>Datatype</th>
+              <th>Entry Titles</th>
               <th></th>
             </tr>
           </thead>
@@ -104,4 +99,12 @@ export default class Fields extends Component {
       </div>
     );
   }
+}
+
+const processEntries = category => {
+  let entries = [];
+  for (var i = 0; i < category.entries.length; i++) {
+    entries.push(category.entries[i].title)
+  }
+  return entries.join().substring(0,30);
 }
