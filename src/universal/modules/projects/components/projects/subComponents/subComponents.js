@@ -31,7 +31,7 @@ export const AddableChip = React.createClass({
     count: PropTypes.number
   },
   render() {
-    console.log('this.props.count', this.props.count);
+    // console.log('this.props.count', this.props.count);
     let count = `(${this.props.count})`;
     if (this.props.count <= 1) {
       count = null

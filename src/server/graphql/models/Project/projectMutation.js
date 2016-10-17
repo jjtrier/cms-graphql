@@ -17,6 +17,9 @@ export default {
       },
       categories: {
         type: new GraphQLList(GraphQLInt)
+      },
+      users: {
+        type: new GraphQLList(GraphQLInt)
       }
     },
     async resolve(source, args) {
@@ -26,7 +29,18 @@ export default {
         description: args.description
       })
       .then(project => {
-        return setCategories(project, args.categories);
+        if (args.categories !== undefined) {
+          return setCategories(project, args.categories);
+        } else {
+          return project;
+        }
+      })
+      .then(project => {
+        if (args.users !== undefined) {
+          return setUsers(project, args.users);
+        } else {
+          return project;
+        }
       });
     }
   },
@@ -44,6 +58,9 @@ export default {
       },
       categories: {
         type: new GraphQLList(GraphQLInt)
+      },
+      users: {
+        type: new GraphQLList(GraphQLInt)
       }
     },
     async resolve(source, args) {
@@ -55,10 +72,13 @@ export default {
           toUpdateProject[key] = args[key];
         }
       });
-      const updatedProject = await projectFound.update(toUpdateProject);
+      let updatedProject = await projectFound.update(toUpdateProject);
       if (updatedProject.error) console.error(updatedProject.error);
       if (args.categories !== undefined) {
-        return setCategories(updatedProject, args.categories);
+        updatedProject = await setCategories(updatedProject, args.categories);
+      }
+      if (args.users !== undefined) {
+        updatedProject = await setUsers(updatedProject, args.users);
       }
       return updatedProject;
     }
@@ -84,7 +104,20 @@ const setCategories = (createdProject, categoryIds) => {
   });
   return promise.each(categoriesPromises, () => {})
   .then(categories => {
-    return createdProject.setCategories(categories);
+    return createdProject.addCategories(categories);
+  })
+  .then(() => {
+    return createdProject;
+  });
+};
+const setUsers = (createdProject, userIds) => {
+  let userPromises = [];
+  userIds.forEach(id => {
+    userPromises.push(Db.models.user.findById(id));
+  });
+  return promise.each(userPromises, () => {})
+  .then(users => {
+    return createdProject.addUsers(users);
   })
   .then(() => {
     return createdProject;

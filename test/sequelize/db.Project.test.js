@@ -84,9 +84,6 @@ describe('Project Db testing', () => {
         return createdProject.getUsers();
       })
       .then(users => {
-        // for (var i = 0; i < users.length; i++) {
-        //   console.log('users!', users[i].dataValues.name)
-        // }
         users.should.be.a('array');
         users.length.should.equal(5);
         users[1].email.should.be.a('string');

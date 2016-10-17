@@ -6,6 +6,7 @@ import {
 } from 'graphql';
 
 import {Category} from '../Category/categorySchema';
+import {User} from '../User/userSchema';
 
 export const Project = new GraphQLObjectType({
   name: 'Project',
@@ -34,6 +35,12 @@ export const Project = new GraphQLObjectType({
         type: new GraphQLList(Category),
         resolve(project) {
           return project.getCategories();
+        }
+      },
+      users: {
+        type: new GraphQLList(User),
+        resolve(project) {
+          return project.getUsers();
         }
       }
     };

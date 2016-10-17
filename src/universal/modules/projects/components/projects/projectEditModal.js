@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Dialog, FlatButton, TextField, Divider} from 'material-ui';
 import {blue300, green200} from 'material-ui/styles/colors';
 import {updateProject} from '../../ducks/projects.js';
-import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {Button, ListGroup, ListGroupItem, Tabs, Tab, SplitButton, MenuItem, FormControl} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
 
@@ -35,15 +35,18 @@ export default class ProjectEditModal extends Component {
     project: PropTypes.object,
     auth: PropTypes.object,
     categories: PropTypes.array,
+    users: PropTypes.array,
     dispatch: PropTypes.func
   }
   state = {
+    tabKey: 1,
     open: false,
     id: this.props.project.id,
     name: this.props.project.name,
     description: this.props.project.description,
     categories: this.props.project.categories,
-    errorText: ''
+    errorText: '',
+    filterUserValue: ''
   };
   _handleEscKey = event => {
     if (event.keyCode === 27) {
@@ -66,7 +69,7 @@ export default class ProjectEditModal extends Component {
     newCategories = this.state.categories.filter(category => category.id !== id);
     this.setState({categories: newCategories});
   }
-  handleChipAdd = category => {
+  handleCategoryChipAdd = category => {
     this.setState({categories: this.state.categories.concat([category])});
   }
 
@@ -94,6 +97,12 @@ export default class ProjectEditModal extends Component {
       categories: this.props.project.categories
     });
   };
+  // this handles setting which tab is selected
+  handleSelectTab = key => {
+    this.setState({
+      tabKey: key
+    });
+  }
 
   render() {
     // these are used by the modal
@@ -107,9 +116,9 @@ export default class ProjectEditModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
+    //
     // templatize the fields to be chips in Component
     const self = this;
-    let allCategories = this.props.categories;
     let categories = this.state.categories;
     let templateStoredCategories = categories.map((category, idx) => {
       return (
@@ -118,7 +127,9 @@ export default class ProjectEditModal extends Component {
         </ListGroupItem>
       );
     });
-    // templatize all available fields to be chips in Component
+    //
+    // templatize all available categories to be chips in Component
+    let allCategories = this.props.categories;
     let templateAllCategories = allCategories.map((category, idx) => {
       let backgroundColor = blue300;
       let check = chosenChecker(category, this.state.categories);
@@ -131,12 +142,35 @@ export default class ProjectEditModal extends Component {
             backgroundColor={backgroundColor}
             category={category}
             count={check.count}
-            onAddClick={self.handleChipAdd}>
+            onAddClick={self.handleCategoryChipAdd}>
           </AddableChip>
         </ListGroupItem>
       );
     });
+    // available users
+    // templatize all available users to be chips in Component
+    let allUsers = this.props.users;
+    allUsers = allUsers.filter(user => {
+      const userName = user.name.toLowerCase();
+      return (userName.includes(this.state.filterUserValue));
+    })
+    let templateAllUsers = allUsers.map((user, idx) => {
+      let backgroundColor = blue300;
+      return (
+        <ListGroupItem key={idx}>
+          <SplitButton title={user.name} pullRight id={user.id}>
+            <MenuItem eventKey="1">Action</MenuItem>
+            <MenuItem eventKey="2">Another action</MenuItem>
+            <MenuItem eventKey="3">Something else here</MenuItem>
+          </SplitButton>
+        </ListGroupItem>
+      );
+    });
     const editProjectName = (`Edit Project: ${this.state.id}`);
+    let that = this;
+    //
+    // this is the main block of html for the edit project modal
+    //
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Project</Button>
@@ -144,6 +178,7 @@ export default class ProjectEditModal extends Component {
           title={editProjectName}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
+
           <div>
             <div style={styles.wrapper}>
               <TextField
@@ -163,16 +198,40 @@ export default class ProjectEditModal extends Component {
             </div>
             <Divider/>
           </div>
-          {/* diplay categories */}
-          <h4>Categories</h4>
-          <div style={styles.wrapper}>
-            <ListGroup>
-              {templateAllCategories}
-            </ListGroup>
-            <ListGroup>
-              {templateStoredCategories}
-            </ListGroup>
-          </div>
+
+          <Tabs activeKey={this.state.tabKey} onSelect={that.handleSelectTab} id="project-edit-tabs">
+
+            <Tab eventKey={1} title="Categories">
+              <div style={styles.wrapper}>
+                <ListGroup>
+                  <ListGroupItem >Available Categories</ListGroupItem>
+                  {templateAllCategories}
+                </ListGroup>
+                <ListGroup>
+                  {templateStoredCategories}
+                </ListGroup>
+              </div>
+            </Tab>
+
+            <Tab eventKey={2} title="Users">
+              <div style={styles.wrapper}>
+                <ListGroup>
+                  <ListGroupItem >Available Users</ListGroupItem>
+                   <FormControl
+                     type="text"
+                     id="filterUserValue"
+                     value={this.state.filterUserValue}
+                     placeholder="Search Me"
+                     onChange={this.handleChange}/>
+                  {templateAllUsers}
+                </ListGroup>
+                <ListGroup>
+                  {templateAllUsers}
+                </ListGroup>
+              </div>
+            </Tab>
+          </Tabs>
+
         </Dialog>
       </div>
     );

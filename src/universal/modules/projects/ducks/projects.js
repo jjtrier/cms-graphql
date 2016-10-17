@@ -6,13 +6,15 @@ export const GET_PROJECTS_BY_USER = 'GET_PROJECTS_BY_USER';
 export const UPDATE_PROJECT = 'UPDATE_PROJECT';
 export const DELETE_PROJECT = 'DELETE_PROJECT';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
+export const GET_ALL_USERS = 'GET_ALL_USERS';
 
 export const PROJECTS = 'projects';
 
 const initialState = iMap({
   projects: iList(),
   project: iMap(),
-  categories: iList()
+  categories: iList(),
+  users: iList()
 });
 
 export function reducer(state = initialState, action) {
@@ -33,6 +35,10 @@ export function reducer(state = initialState, action) {
       return state.merge({
         categories: fromJS(action.payload)
       });
+    case GET_ALL_USERS:
+      return state.merge({
+        users: fromJS(action.payload)
+      });
     case DELETE_PROJECT:
     default:
       return state;
@@ -45,6 +51,7 @@ export function getAllProjects() {
     id
     name
     description
+    users{id,name, email, usertype}
     categories{id,name,visible,
       entries{id,title,projectId,datatypeId,visible,data,categoryId}
       datatype{
@@ -64,7 +71,7 @@ export function getAllProjects() {
     const query = `
         query {
           getAllProjects
-          ${projectSchema}
+          ${projectSchema}getAllUsers{id,name,email,usertype}
         }`;
     const {error, data} = await fetchGraphQL({query});
     if (error) {
@@ -74,6 +81,10 @@ export function getAllProjects() {
       dispatch({
         type: GET_PROJECTS,
         payload: data.getAllProjects
+      });
+      dispatch({
+        type: GET_ALL_USERS,
+        payload: data.getAllUsers
       });
     }
   };
@@ -111,15 +122,20 @@ export function getUsersProjectsById(id) {
     const query = `
         query {
           getUsersProjectsById(id: ${id})
-          ${projectSchema}
+          ${projectSchema}getAllUsers{id,name,email,usertype}
         }`;
     const {error, data} = await fetchGraphQL({query});
+    // console.log('data.getAllUsers', data.getAllUsers);
     if (error) {
       console.error(error);
     } else {
       dispatch({
         type: GET_PROJECTS_BY_USER,
         payload: data.getUsersProjectsById
+      });
+      dispatch({
+        type: GET_ALL_USERS,
+        payload: data.getAllUsers
       });
     }
   };
