@@ -41,8 +41,15 @@ export default class CategoryEditModal extends Component {
     });
   };
 
-  handleChangeVisible = (event, index, value) => this.setState({required: value});
-  handleChangeDatatype = (event, index, value) => this.setState({required: value});
+  handleChangeVisible = (event, index, value) => this.setState({visible: value});
+
+  handleChangeDatatype = (event, index, value) => {
+    const chosenDatatype = this.props.datatypes.filter(datatype => {
+      return (datatype.id === (value));
+    });
+    console.log('chosenDatatype[0]', chosenDatatype[0]);
+    this.setState({datatype: chosenDatatype[0]})
+  };
 
   handleOpen = () => {
     this.setState({open: true});
@@ -53,10 +60,11 @@ export default class CategoryEditModal extends Component {
     let updateCategoryInfo = {
       id: this.state.id,
       name: this.state.name,
-      datatype: this.state.datatype,
+      datatype: this.state.datatype.id,
       visible: this.state.visible
     };
-    updateCategoryInfo = JSON.stringify(updateCategoryInfo);
+    // console.log('updateCategoryInfo', updateCategoryInfo);
+    // updateCategoryInfo = JSON.stringify(updateCategoryInfo);
     this.props.dispatch(updateCategory(updateCategoryInfo));
   };
 // this handles the closing of the modal/dialog
@@ -81,16 +89,19 @@ export default class CategoryEditModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
+    const datatypesAvailable = this.props.datatypes;
+    let dataTypesItems = datatypesAvailable.map((datatype, idx) => {
+      return (
+        <MenuItem key={idx} value={datatype.id} primaryText={datatype.name}/>
+      );
+    });
 
     const editCategoryName = (`Edit Category: ${this.state.id}`);
-    console.log('this.state !!', this.state);
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Category</Button>
         <Dialog
           title={editCategoryName}
-          autoDetectWindowHeight={true}
-          autoScrollBodyContent={true}
           contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
           actions={actions} open={this.state.open} >
           <div>
@@ -107,9 +118,7 @@ export default class CategoryEditModal extends Component {
                 <MenuItem key={2} value={false} primaryText={'False'}/>
               </SelectField>
               <SelectField value={this.state.datatype.id} id="datatypeSel" onChange={this.handleChangeDatatype} floatingLabelText="Datatype">
-                <MenuItem key={1} value={1} primaryText={'One'}/>
-                <MenuItem key={2} value={2} primaryText={'Two'}/>
-                <MenuItem key={3} value={3} primaryText={'Three'}/>
+                {dataTypesItems}
               </SelectField>
             </div>
           </div>

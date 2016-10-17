@@ -78,7 +78,8 @@ export function createField(variables) {
       await dispatch(getFields());
     }
   };
-}// update a field
+}
+// update a field
 export function updateField(field, variables) {
   const fieldMutation =
   `

@@ -26,6 +26,9 @@ export default class Header extends Component {
             <Link to="/fields">
               <RaisedButton secondary label="Fields" className={styles.RaisedButton}/>
             </Link>
+            <Link to="/categories">
+              <RaisedButton secondary label="Categories" className={styles.RaisedButton}/>
+            </Link>
           </div>
         </div>
       </div>

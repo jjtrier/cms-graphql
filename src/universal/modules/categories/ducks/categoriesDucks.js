@@ -2,7 +2,7 @@ import {fromJS, Map as iMap, List as iList} from 'immutable';
 import {fetchGraphQL} from '../../../utils/fetching';
 
 export const GET_CATEGORIES = 'GET_CATEGORIES';
-// export const UPDATE_FIELD = 'UPDATE_FIELD';
+export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
 // export const CREATE_FIELD = 'CREATE_FIELD';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 export const GET_DATATYPES = 'GET_DATATYPES';
@@ -23,6 +23,7 @@ export function reducer(state = initialState, action) {
       return state.merge({
         datatypes: fromJS(action.payload)
       });
+    case UPDATE_CATEGORY:
     // case UPDATE_FIELD:
     // case CREATE_FIELD:
     //   return state.merge({
@@ -80,9 +81,33 @@ export function deleteCategory(id) {
     }
   };
 }
-
-export function updateCategory(id) {
-  return id;
+// update a category
+export function updateCategory(variables) {
+  const categoryMutation =
+  `(
+    id: $id,
+    name: $name,
+    visible: $visible,
+    datatype: $datatype
+  )`;
+  const categorySchema = `{id,name,visible,datatype{id,name,description}}`;
+  return async(dispatch, getState) => {
+    const query = `mutation updateCategory($id: Int!, $name: String, $datatype: Int, $visible: Boolean){
+          updateCategory
+          ${categoryMutation}
+          ${categorySchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: UPDATE_CATEGORY,
+        payload: data.updateCategory
+      });
+      await dispatch(getAllCategories());
+    }
+  };
 }
 // get all datatypes
 export function getDatatypes() {

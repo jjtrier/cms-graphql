@@ -123,13 +123,29 @@ describe('Graphql Category route testing, no server', () => {
   });
   describe('updateCategory', () => {
     it('it should update a category', done => {
-      const query = 'mutation{updateCategory(id:4,name:"grease the wheels",visible:false,datatype:2){id,name,visible}}';
-      graphql(Schema, query)
+      const categoryMutation =
+      `(
+        id: $id,
+        name: $name,
+        visible: $visible,
+        datatype: $datatype
+      )`;
+      const categorySchema = `{id,name,visible,datatype{id,name,description}}`;
+      const variables = {
+        id: 4,
+        name: "grease the wheels",
+        visible: false,
+        datatype: 2
+      };
+      const query = `mutation M($id: Int!, $name: String, $visible: Boolean, $datatype: Int){updateCategory${categoryMutation}${categorySchema}}`;
+      // const query = 'mutation{updateCategory(id:4,name:"grease the wheels",visible:false,datatype:2){id,name,visible}}';
+      graphql(Schema, query, null, context, variables)
       .then(res => {
         const category = res.data.updateCategory;
         expect(category).to.be.a('object');
         expect(category.name).to.equal('grease the wheels');
         expect(category.visible).to.equal(false);
+        expect(category.datatype.id).to.equal(2);
         expect(category.id).to.equal(4);
         done();
       })
@@ -139,6 +155,7 @@ describe('Graphql Category route testing, no server', () => {
       });
     });
   });
+
   describe('deleteCategory', () => {
     it('it should delete a category', done => {
       const query = 'mutation{deleteCategory(id:4){id,name}}';
