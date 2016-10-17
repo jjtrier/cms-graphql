@@ -50,11 +50,18 @@ export default class CategoryEditModal extends Component {
     console.log('chosenDatatype[0]', chosenDatatype[0]);
     this.setState({datatype: chosenDatatype[0]})
   };
-
+  // this handles the opening of the modal/dialog
   handleOpen = () => {
     this.setState({open: true});
   };
-
+  // this handles the closing of the modal/dialog
+  handleClose = () => {
+    this.setState({
+      open: false,
+      category: this.props.category
+    });
+  };
+  // this handles the submission of changed data
   handleSubmit = () => {
     this.setState({open: false});
     let updateCategoryInfo = {
@@ -63,16 +70,7 @@ export default class CategoryEditModal extends Component {
       datatype: this.state.datatype.id,
       visible: this.state.visible
     };
-    // console.log('updateCategoryInfo', updateCategoryInfo);
-    // updateCategoryInfo = JSON.stringify(updateCategoryInfo);
     this.props.dispatch(updateCategory(updateCategoryInfo));
-  };
-// this handles the closing of the modal/dialog
-  handleClose = () => {
-    this.setState({
-      open: false,
-      category: this.props.category
-    });
   };
 
   render() {

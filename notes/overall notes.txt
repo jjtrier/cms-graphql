@@ -1,0 +1,15 @@
+Postgres needs to be running on host machine. 9.5.4 on Mac was used for development.
+
+Create a new Postgres DB named relay_test for testing, and relay for production.
+
+npm start to start server
+
+npm run seed to seed development server
+
+npm run test to run tests
+
+To run an individual sequelize test, example;
+NODE_ENV=testing mocha test/sequelize/db.project.test.js --compilers js:babel-core/register --require babel-polyfill
+
+To run and individual graphql test, example;
+NODE_ENV=testing mocha test/graphql/graphql.field.noServer.test.js --compilers js:babel-core/register --require babel-polyfill

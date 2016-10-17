@@ -1,3 +1,6 @@
+// this file also contains definitions for Pernission, Usertype, and Usertype
+// their relations to each other are defined at the bottom
+
 import Conn from '../_db';
 import Sequelize from 'sequelize';
 

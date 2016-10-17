@@ -1,0 +1,8 @@
+When adding a new table to the database, start with defining the table and fields within src/server/database/models.  That file is required into the index.js, where any relations are also mapped.
+
+That table needs to be added to graphql.  src/server/database/graphql/models
+  -An exampleTableSchema.js needs to be defined which creates the graphql object (example, User) and then defines how each field of that object is mapped to a field of the underlying sequelize db.
+  - Then exampleQuery.js needs to be defined. The actual names of the queries that will be requested from your API end point are defined here.  The args are part of the incoming request, and the resolve defines how that request will be resolved from the sequelize db.
+  - exampleMutation.js defines how data mutations are handled, and has similar resolves to the Query file.  Some of the extra logic in these mutations results from making sure undefined data is not passed into the object updates.
+
+  The exampleQuery.js and exampleMutation.js need to be added to src/graphql rootQuery.js and rootMutation respectively

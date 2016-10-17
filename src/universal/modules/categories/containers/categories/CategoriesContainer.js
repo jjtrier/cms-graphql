@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Categories from '../../components/categories/categories';
 import {getAllCategories} from '../../ducks/categoriesDucks.js';
-import {loginToken} from '../../../auth/ducks/auth.js'
+import {loginToken} from '../../../auth/ducks/auth.js';
 import {connect} from 'react-redux';
 
 import {ensureState} from 'redux-optimistic-ui';
@@ -19,7 +19,6 @@ export default class CategoriesContainer extends Component {
     const {dispatch} = props;
     dispatch(loginToken());
     dispatch(getAllCategories());
-    // dispatch(getDatatypes());
   }
   render() {
     return <Categories {...this.props} {...this.props.categories} {...this.props.auth}/>;
@@ -28,7 +27,6 @@ export default class CategoriesContainer extends Component {
 
 function mapStateToProps(state) {
   state = ensureState(state);
-  // console.log('stuff', state.get('fields').toJS());
   return {
     categories: state.get('categories').toJS(),
     auth: state.get('auth').toJS()

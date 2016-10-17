@@ -1,0 +1,12 @@
+- Duplicate one of the existing folders inside src/universal/modules
+- Rename all folders and files within
+
+- Duplicate datatypes.js inside src/universal/routes to the name of your desired module
+- In your new file, change datatypes to yournewthing etc..
+- Line 25 imports you 'Ducks' or redux fieldQuery
+- Line 32 defines the name of your tree on the redux store
+  any items that are added to the initialState in your Ducks file will be accessable from that tree
+
+  - I have been getting any needed data from the store inside the container file for my module by dispatching actions imported from my ducks file.
+
+  - The graphl queries and mutations that interact with the API are set up in the Ducks files.  Good examples of those are inside the tests.  I have been gradually rewriting the tests to use graphql variables in the correct manner.  One good example is the createField test inside fields graphql test.

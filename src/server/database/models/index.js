@@ -13,12 +13,9 @@ User.belongsToMany(Project, {through: 'UsersToProjects'});
 // This will add methods getUsers, setUsers, addUser,addUsers to Project, and getProjects, setProjects, addProject, and addProjects to User.
 // This will create a new model called UsersToProjects with the equivalent foreign keys projectId and userId.
 Project.hasMany(Category);
-// Datatype.belongsTo(Category);
-// Category.hasMany(Entry);
 Category.hasOne(Datatype);
 Field.belongsToMany(Datatype, {through: 'FieldsToDatatypes'});
 Datatype.belongsToMany(Field, {through: 'FieldsToDatatypes'});
 // This will add methods getDatatype, setDatatype, addDatatype,addDatatype to Field, and getFields, setFields, addFields, and addField to Datatype.
 // This will create a new model called FieldsToDatatypes with the equivalent foreign keys datatypeId and fieldId.
-// console.log('Category.prototype!!', Category.prototype);
 Category.hasMany(Entry);

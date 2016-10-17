@@ -26,14 +26,9 @@ export const Category = Conn.define('category', {
       getEntriesMethod: function () {// eslint-disable-line babel/object-shorthand
         const Id = this.get('id');
         return Entry.findAll({where: {categoryId: Id}})
-        .then(function (entries){
+        .then(function (entries) {
           return entries;
-        })
-        // .then(entries => {
-        //   console.log('in here!');
-        //   console.log('entries in instanceMethods', entries);
-        //   return entries;
-        // });
+        });
       }
     }
   }
