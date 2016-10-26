@@ -1,8 +1,8 @@
 /* eslint-disable pref-const */
 import React, {Component, PropTypes} from 'react';
-import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
+import {Dialog, FlatButton, TextField, SelectField, MenuItem} from 'material-ui';
 import {updateCategory} from '../../ducks/categoriesDucks.js';
-import {Table, Button} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 
 export default class CategoryEditModal extends Component {
@@ -42,7 +42,7 @@ export default class CategoryEditModal extends Component {
   };
 
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
-
+// this handles the choice of datatype
   handleChangeDatatype = (event, index, value) => {
     const chosenDatatype = this.props.datatypes.filter(datatype => {
       return (datatype.id === (value));
@@ -111,12 +111,12 @@ export default class CategoryEditModal extends Component {
                 onChange={this.handleChange}
                 name="Name"
                 />
+                <SelectField value={this.state.datatype.id} id="datatypeSel" onChange={this.handleChangeDatatype} floatingLabelText="Datatype">
+                  {dataTypesItems}
+                </SelectField>
               <SelectField value={this.state.visible} id="visibleSel" onChange={this.handleChangeVisible} floatingLabelText="Visible Status">
                 <MenuItem key={1} value={true} primaryText={'True'}/>
                 <MenuItem key={2} value={false} primaryText={'False'}/>
-              </SelectField>
-              <SelectField value={this.state.datatype.id} id="datatypeSel" onChange={this.handleChangeDatatype} floatingLabelText="Datatype">
-                {dataTypesItems}
               </SelectField>
             </div>
           </div>

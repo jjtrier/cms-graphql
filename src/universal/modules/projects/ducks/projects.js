@@ -28,8 +28,12 @@ export function reducer(state = initialState, action) {
         projects: fromJS(action.payload)
       });
     case UPDATE_PROJECT:
+      let previousStateProjects = state.get('projects').toJS();
+      previousStateProjects = previousStateProjects.filter(project => {
+        return (project.id !== action.payload.id);
+      })
       return state.merge({
-        project: fromJS(action.payload)
+        projects: fromJS(previousStateProjects.concat(action.payload))
       });
     case GET_CATEGORIES:
       return state.merge({
@@ -165,7 +169,7 @@ export function updateProject(id, variables) {
         type: UPDATE_PROJECT,
         payload: data.updateProject
       });
-      await dispatch(getUsersProjectsById(id));
+      // await dispatch(getUsersProjectsById(id));
     }
   };
 }

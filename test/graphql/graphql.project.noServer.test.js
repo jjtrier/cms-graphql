@@ -78,15 +78,17 @@ describe('Graphql Project route testing, no server', () => {
   });
   describe('getProjectById', () => {
     it('it should get a project by Id', done => {
-        const query = "{getProjectById(id:1){id,name,description,categories{id,name},users{id,name,email,usertype}}}";
+        const query = "{getProjectById(id:1){id,name,description,categories{id,name},taggedUsers{role,user{id,name, email}}users{id,name,email,usertype}}}";
         graphql(Schema, query)
         .then(res => {
           const project = res.data.getProjectById;
+          console.log('project.taggedUsers[0].role', project.taggedUsers[0].role);
           expect(project).to.have.property('name');
           expect(project).to.have.property('description');
           expect(project).to.have.property('id');
           expect(project).to.have.property('users');
           expect(project).to.have.property('categories');
+          expect(project).to.have.property('taggedUsers');
           expect(project.name).to.be.a('string');
           expect(project.description).to.be.a('string');
           done();

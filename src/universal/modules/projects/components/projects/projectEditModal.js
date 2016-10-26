@@ -148,12 +148,24 @@ export default class ProjectEditModal extends Component {
       );
     });
     // available users
-    // templatize all available users to be chips in Component
+    // templatize all available users to be buttons in Component
     let allUsers = this.props.users;
     allUsers = allUsers.filter(user => {
       const userName = user.name.toLowerCase();
       return (userName.includes(this.state.filterUserValue));
-    })
+    });
+    // console.log('befpre', allUsers);
+    // allUsers = allUsers.sort((a, b) => {
+    //   const alastName = a.name.split(' ')[0];
+    //   const blastName = b.name.split(' ')[0];
+    //   if (alastName > blastName) {
+    //     return -1}
+    //   if (alastName < blastName) {
+    //     return 1}
+    //   else return 0;
+    // });
+    // console.log(allUsers);
+
     let templateAllUsers = allUsers.map((user, idx) => {
       let backgroundColor = blue300;
       return (
