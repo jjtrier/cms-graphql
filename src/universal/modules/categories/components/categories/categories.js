@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import styles from './categories.css';
 import {Table, Button} from 'react-bootstrap';
 import CategoryEditModal from './categoryEditModal.js';
-// import FieldCreateModal from './fieldCreateModal.js';
+import CategoryCreateModal from './categoryCreateModal.js';
 import {deleteCategory, getAllCategories} from '../../ducks/categoriesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
@@ -64,30 +64,41 @@ export default class Categories extends Component {
     // templatize the categories to be placed in Component
     let template = categories.map((category, idx) => {
       let entries = processEntries(category);
-      if(category.datatype === undefined || category.datatype === null) {
-        category.datatype = {name: 'no datatype'};}
+      if (category.datatype === undefined || category.datatype === null) {
+        category.datatype = {name: 'no datatype'};
+      }
       return (
         <tr key={idx}>
           <td>{category.id}</td>
           <td>{category.name}</td>
           <td>{category.datatype.name}</td>
           <td>{entries}...</td>
-            <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
-              <CategoryEditModal category={category}
+          <td>{category.visible.toString()}</td>
+          <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
+              <CategoryEditModal
+                category={category}
                 datatypes={self.props.datatypes}
                 dispatch={self.props.dispatch}/>
-            </ToggleDisplay>
-          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+          </ToggleDisplay>
+          <ToggleDisplay
+            show={self.state.isAuthorized}
+            tag="td"
             className={styles._center}>
             <DeleteButton category={category} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
         </tr>
     );
     });
-
+    const datatypes = this.props.datatypes;
+    const dispatch = this.props.dispatch;
     return (
       <div className={styles._container}>
         <h1>Categories</h1>
+        <div className={styles.createButton}>
+          <CategoryCreateModal
+            datatypes={datatypes}
+            dispatch={dispatch}/>
+        </div>
         <Table striped bordered condensed hover>
           <thead>
             <tr>
@@ -95,6 +106,7 @@ export default class Categories extends Component {
               <th>Name</th>
               <th>Datatype</th>
               <th>Entry Titles</th>
+              <th>Visible</th>
               <th></th>
               <th></th>
             </tr>

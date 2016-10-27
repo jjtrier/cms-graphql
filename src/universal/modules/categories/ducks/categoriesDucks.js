@@ -3,7 +3,7 @@ import {fetchGraphQL} from '../../../utils/fetching';
 
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 export const UPDATE_CATEGORY = 'UPDATE_CATEGORY';
-// export const CREATE_FIELD = 'CREATE_FIELD';
+export const CREATE_CATEGORY = 'CREATE_CATEGORY';
 export const DELETE_CATEGORY = 'DELETE_CATEGORY';
 export const GET_DATATYPES = 'GET_DATATYPES';
 
@@ -24,6 +24,7 @@ export function reducer(state = initialState, action) {
         datatypes: fromJS(action.payload)
       });
     case UPDATE_CATEGORY:
+    case CREATE_CATEGORY:
     // case UPDATE_FIELD:
     // case CREATE_FIELD:
     //   return state.merge({
@@ -103,6 +104,33 @@ export function updateCategory(variables) {
     } else {
       await dispatch({
         type: UPDATE_CATEGORY,
+        payload: data.updateCategory
+      });
+      await dispatch(getAllCategories());
+    }
+  };
+}
+// create a category
+export function createCategory(variables) {
+  const categoryMutation =
+  `(
+    name: $name,
+    visible: $visible,
+    datatype: $datatype
+  )`;
+  const categorySchema = `{id,name,visible,datatype{id,name,description}}`;
+  return async(dispatch, getState) => {
+    const query = `mutation createCategory($name: String!, $datatype: Int, $visible: Boolean){
+          createCategory
+          ${categoryMutation}
+          ${categorySchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query, variables});
+    if (error) {
+      console.error(error);
+    } else {
+      await dispatch({
+        type: CREATE_CATEGORY,
         payload: data.updateCategory
       });
       await dispatch(getAllCategories());

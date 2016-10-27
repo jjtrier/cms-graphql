@@ -32,7 +32,7 @@ describe('Graphql Project route testing, no server', () => {
 
   describe('getAllProjects', () => {
     it('it should get all the projects', done => {
-        const query = "{getAllProjects{id,name,description}}";
+        const query = "{getAllProjects{id,name,description,categories{id,name},users{id,name,email,usertype}}}";
         graphql(Schema, query)
         .then(res => {
           const projects = res.data.getAllProjects;
@@ -41,6 +41,8 @@ describe('Graphql Project route testing, no server', () => {
           expect(projects[0]).to.have.property('name');
           expect(projects[0]).to.have.property('description');
           expect(projects[0]).to.have.property('id');
+          expect(projects[0]).to.have.property('users');
+          expect(projects[0]).to.have.property('categories');
           expect(projects[0].name).to.be.a('string');
           expect(projects[0].description).to.be.a('string');
           done();
@@ -53,7 +55,7 @@ describe('Graphql Project route testing, no server', () => {
   });
   describe('getUsersProjectsById', () => {
     it('it should get a users projects', done => {
-        const query = "{getUsersProjectsById(id:1){id,name,description,categories{id,name}}}";
+        const query = "{getUsersProjectsById(id:1){id,name,description,categories{id,name},users{id,name,email,usertype}}}";
         graphql(Schema, query)
         .then(res => {
           const projects = res.data.getUsersProjectsById;
@@ -62,6 +64,8 @@ describe('Graphql Project route testing, no server', () => {
           expect(projects[0]).to.have.property('name');
           expect(projects[0]).to.have.property('description');
           expect(projects[0]).to.have.property('id');
+          expect(projects[0]).to.have.property('categories');
+          expect(projects[0]).to.have.property('users');
           expect(projects[0].name).to.be.a('string');
           expect(projects[0].description).to.be.a('string');
           done();
@@ -74,13 +78,17 @@ describe('Graphql Project route testing, no server', () => {
   });
   describe('getProjectById', () => {
     it('it should get a project by Id', done => {
-        const query = "{getProjectById(id:1){id,name,description,categories{id,name}}}";
+        const query = "{getProjectById(id:1){id,name,description,categories{id,name},taggedUsers{role,user{id,name, email}}users{id,name,email,usertype}}}";
         graphql(Schema, query)
         .then(res => {
           const project = res.data.getProjectById;
+          console.log('project.taggedUsers[0].role', project.taggedUsers[0].role);
           expect(project).to.have.property('name');
           expect(project).to.have.property('description');
           expect(project).to.have.property('id');
+          expect(project).to.have.property('users');
+          expect(project).to.have.property('categories');
+          expect(project).to.have.property('taggedUsers');
           expect(project.name).to.be.a('string');
           expect(project.description).to.be.a('string');
           done();
@@ -133,16 +141,18 @@ describe('Graphql Project route testing, no server', () => {
         id: $id,
         name: $name,
         description: $description,
-        categories: $categories
+        categories: $categories,
+        users: $users
       )`;
-      const projectSchema = `{id,name,description,categories{id,name}}`;
+      const projectSchema = `{id,name,description,categories{id,name},users{id,name,email,usertype}}`;
       const variables = {
         id: 11,
         name: "Herding Cats",
         description: "A difficult task",
-        categories: [3]
+        categories: [3],
+        users: [3]
       };
-      const query = `mutation M($id: Int!, $name: String, $description: String, $categories: [Int]){updateProject${projectMutation}${projectSchema}}`;
+      const query = `mutation M($id: Int!, $name: String, $description: String, $categories: [Int], $users: [Int]){updateProject${projectMutation}${projectSchema}}`;
       graphql(Schema, query, null, context, variables)
         .then(res => {
           const project = res.data.updateProject;
@@ -150,11 +160,13 @@ describe('Graphql Project route testing, no server', () => {
           expect(project).to.have.property('description');
           expect(project).to.have.property('id');
           expect(project).to.have.property('categories');
+          expect(project).to.have.property('users');
           expect(project.name).to.be.a('string');
           expect(project.name).to.equal('Herding Cats');
+          expect(project.users[0].id).to.equal(3);
           expect(project.description).to.equal('A difficult task');
           expect(project.description).to.be.a('string');
-          expect(project.categories.length).to.equal(1);
+          expect(project.categories.length).to.equal(3);
           done();
         })
         .catch(err => {
@@ -163,6 +175,38 @@ describe('Graphql Project route testing, no server', () => {
         });
     });
   });
+  describe('updateProject with a user', () => {
+    it('it should update a project, adding one user', done => {
+      const projectMutation =
+      `(
+        id: $id,
+        users: $users
+      )`;
+      const projectSchema = `{id,name,description,categories{id,name},users{id,name,email,usertype}}`;
+      const variables = {
+        id: 11,
+        users: [4]
+      };
+      const query = `mutation M($id: Int!, $users: [Int]){updateProject${projectMutation}${projectSchema}}`;
+      graphql(Schema, query, null, context, variables)
+        .then(res => {
+          const project = res.data.updateProject;
+          expect(project).to.have.property('name');
+          expect(project).to.have.property('description');
+          expect(project).to.have.property('id');
+          expect(project).to.have.property('categories');
+          expect(project).to.have.property('users');
+          expect(project.name).to.be.a('string');
+          expect(project.users.length).to.equal(2);
+          done();
+        })
+        .catch(err => {
+          console.log(error(err));
+          // done();
+        });
+    });
+  });
+
   describe('deleteProject', () => {
     it('it should delete a project', done => {
       const query = 'mutation{deleteProject(id:11){id}}';

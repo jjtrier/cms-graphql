@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Chip from 'material-ui/Chip';
-import {styles} from '../modalStyles.js';
+import styles from '../modalStyles.css';
 import {green200} from 'material-ui/styles/colors';
 
 export const DeletableChip = React.createClass({
@@ -13,7 +13,7 @@ export const DeletableChip = React.createClass({
       <Chip
         onRequestDelete={this._onClick}
         backgroundColor={green200}
-        style={styles.chip}>
+        className={styles._chip}>
         {this.props.category.name}
       </Chip>
     );
@@ -31,7 +31,7 @@ export const AddableChip = React.createClass({
     count: PropTypes.number
   },
   render() {
-    console.log('this.props.count', this.props.count);
+    // console.log('this.props.count', this.props.count);
     let count = `(${this.props.count})`;
     if (this.props.count <= 1) {
       count = null
@@ -40,7 +40,7 @@ export const AddableChip = React.createClass({
       <Chip
         onTouchTap={this._onClick}
         backgroundColor={this.props.backgroundColor}
-        style={styles.chip}>
+        className={styles._chip}>
         {this.props.category.name} {count}
       </Chip>
     );

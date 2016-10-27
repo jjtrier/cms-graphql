@@ -102,6 +102,7 @@ export function getAllUserTypes() {
 // create a User
 //
 export function createUser(user) {
+  console.log('inside create user');
   const userMutation =
   `
   (

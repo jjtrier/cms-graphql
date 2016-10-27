@@ -40,13 +40,16 @@ export default class Projects extends Component {
   static propTypes = {
     projects: PropTypes.array,
     categories: PropTypes.array,
+    users: PropTypes.array,
     dispatch: PropTypes.func,
-    auth: PropTypes.object
+    auth: PropTypes.object,
+    usertypes: PropTypes.array
   }
 
   state = {
     isAuthorized: false,
-    projects: this.props.projects
+    projects: this.props.projects,
+    users: this.props.users
   }
 
   handleEdit = project => {
@@ -76,7 +79,6 @@ export default class Projects extends Component {
       });
     }
   }
-
   render() {
     const self = this;
     const projects = this.props.projects.sort((a,b) => {
@@ -101,6 +103,8 @@ export default class Projects extends Component {
             <ProjectEditModal project={project}
               auth={self.props.auth}
               categories={self.props.categories}
+              users={self.props.users}
+              usertypes={self.props.usertypes}
               dispatch={self.props.dispatch}/>
           </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td"

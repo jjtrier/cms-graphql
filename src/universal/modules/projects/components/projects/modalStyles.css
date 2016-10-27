@@ -1,0 +1,13 @@
+._chip {
+    margin: 0;
+    height: 32px;
+  }
+
+._wrapper {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  ._newUserButton {
+    height: 32px
+  }

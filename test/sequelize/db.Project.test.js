@@ -76,19 +76,31 @@ describe('Project Db testing', () => {
   });
   describe('Add users to a project', () => {
     it('should users to a project', done => {
+      let foundUsers = [];
       Db.models.user.findAll()
       .then(users => {
-        return createdProject.setUsers(users);
+        foundUsers = users;
+        return createdProject.addUser(foundUsers[0], {role: 'developer'});
+      })
+      .then(() => {
+        return createdProject.addUser(foundUsers[1], {role: 'publisher'});
+      })
+      .then(() => {
+        return createdProject.addUser(foundUsers[2], {role: 'publisher'});
+      })
+      .then(() => {
+        return createdProject.getProjectUsersByType('publisher');
+      })
+      .then(users => {
+        users.length.should.equal(2);
       })
       .then(() => {
         return createdProject.getUsers();
       })
       .then(users => {
-        // for (var i = 0; i < users.length; i++) {
-        //   console.log('users!', users[i].dataValues.name)
-        // }
         users.should.be.a('array');
-        users.length.should.equal(5);
+        users.length.should.equal(3);
+        users[0].email.should.be.a('string');
         users[1].email.should.be.a('string');
         done();
       });

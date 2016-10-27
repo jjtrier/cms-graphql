@@ -8,11 +8,12 @@ export default class UserCreateModal extends Component {
   static propTypes = {
     user: PropTypes.object,
     usertypes: PropTypes.array,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    open: PropTypes.boolean,
+    modal: PropTypes.boolean
   }
   state = {
     open: false,
-    // id: null,
     name: '',
     email: '',
     usertype: 'admin',
@@ -20,7 +21,8 @@ export default class UserCreateModal extends Component {
     password: '',
     passwordCheck: '',
     usertypes: this.props.usertypes,
-    errorText: ''
+    errorText: '',
+    modal: this.props.modal
   };
 
   handleChange = event => {
@@ -72,6 +74,7 @@ export default class UserCreateModal extends Component {
   };
 
   render() {
+    let wrapper;
     // this maps the usertypes array to possible choices in pulldown
     let userTypeItems = this.props.usertypes.map((usertype, idx) => {
       let usertypeCapped = usertype.name.substr(0, 1).toUpperCase() + usertype.name.substr(1);
@@ -89,62 +92,79 @@ export default class UserCreateModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
+    let innerWorkings = (
+      <div>
+        <TextField
+          floatingLabelText="Name"
+          id="name"
+          value={this.state.name}
+          onChange={this.handleChange}
+          name="Name"
+          />
+        <Divider/>
+        <TextField
+          floatingLabelText="Email"
+          id="email"
+          value={this.state.email}
+          onChange={this.handleChange}
+          />
+        <Divider/>
+        <SelectField value={this.state.usertype} id="usertypeSel" onChange={this.handleChangeUserType} floatingLabelText="User Type">
+          {userTypeItems}
+        </SelectField>
+        <Divider/>
+        <SelectField value={this.state.active}
+          id="activeSel"
+          onChange={this.handleChangeActive}
+          floatingLabelText="Active Status">
+          <MenuItem key={1} value={true} primaryText={'Active'}/>
+          <MenuItem key={2} value={false} primaryText={'Inactive'}/>
+        </SelectField>
+          <Divider/>
+        <TextField
+          floatingLabelText="Enter New Password"
+          id="password"
+          value={this.state.password}
+          onChange={this.handleChange}
+        />
+        <Divider/>
+        <TextField
+          floatingLabelText="Confirm New Password"
+          id="passwordCheck"
+          value={this.state.passwordCheck}
+          onChange={this.handleChange}
+          errorText={this.state.errorText}
+          onKeyDown={this.handleKeyPress}
+        />
+      </div>
+    );
+    if (this.state.modal) {
+      wrapper = (
+        <div>
+          <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>New User</Button>
+          <Dialog
+            title="Create a New User"
+            autoDetectWindowHeight={false}
+            autoScrollBodyContent={false}
+            contentStyle={{width: "100%", maxHeight: "none"}}
+            onKeyDown={this.handleKeyPress}
+            actions={actions} open={this.state.open} >
+            {innerWorkings}
+          </Dialog>
+        </div>
+      )
+    } else {
+      wrapper = (
+        <div>
+          <h2>Create a New User</h2>
+            {innerWorkings}
+        </div>
+      )
+    }
 
     return (
       <div>
-        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>New User</Button>
-        <Dialog
-          title="Create a New User"
-          autoDetectWindowHeight={false}
-          autoScrollBodyContent={false}
-          contentStyle={{width: "100%", maxHeight: "none"}}
-          onKeyDown={this.handleKeyPress}
-          actions={actions} open={this.state.open} >
-          <div>
-            <TextField
-              floatingLabelText="Name"
-              id="name"
-              value={this.state.name}
-              onChange={this.handleChange}
-              name="Name"
-              />
-            <Divider/>
-            <TextField
-              floatingLabelText="Email"
-              id="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-              />
-            <Divider/>
-            <SelectField value={this.state.usertype} id="usertypeSel" onChange={this.handleChangeUserType} floatingLabelText="User Type">
-              {userTypeItems}
-            </SelectField>
-            <Divider/>
-            <SelectField value={this.state.active}
-              id="activeSel"
-              onChange={this.handleChangeActive}
-              floatingLabelText="Active Status">
-              <MenuItem key={1} value={true} primaryText={'Active'}/>
-              <MenuItem key={2} value={false} primaryText={'Inactive'}/>
-            </SelectField>
-              <Divider/>
-            <TextField
-              floatingLabelText="Enter New Password"
-              id="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-            />
-            <Divider/>
-            <TextField
-              floatingLabelText="Confirm New Password"
-              id="passwordCheck"
-              value={this.state.passwordCheck}
-              onChange={this.handleChange}
-              errorText={this.state.errorText}
-              onKeyDown={this.handleKeyPress}
-            />
-          </div>
-        </Dialog>
+        {wrapper}
       </div>
     );
   }

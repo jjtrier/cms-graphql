@@ -110,7 +110,7 @@ function seed() {
     const promisedArr = [];
     for (let i = 0; i < projects.length; i++) {
       const j = Math.floor(i / 2);
-      promisedArr.push(projects[i].setUsers(createdUsers[j]));
+      promisedArr.push(projects[i].addUser(createdUsers[j], {role: 'developer'}));
     }
     return Promise.all(promisedArr);
   })
@@ -201,6 +201,12 @@ function seed() {
   .then(() => {
     return Db.models.entry.bulkCreate(entries);
   })
+  // .then(() => {
+  //   return Db.models.UsersToProjects.findAll();
+  // })
+  // .then(UsersToProjects => {
+  //   console.log ('UsersToProjects', UsersToProjects[0].dataValues);
+  // })
   .then(() => {
     console.log("                Seed was successful");
     return Promise.resolve(null);
