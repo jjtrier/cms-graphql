@@ -1,7 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
+import {TextField, Divider, SelectField, MenuItem, RaisedButton} from 'material-ui';
+import Modal from 'react-modal';
+import ModalButtons from '../../../../components/modalButtons/modalButtons.js';
+import {green500} from 'material-ui/styles/colors';
 import {createUser} from '../../ducks/users.js';
 import {Button} from 'react-bootstrap';
+import styles from './users.css';
 
 export default class UserCreateModal extends Component {
 
@@ -9,8 +13,8 @@ export default class UserCreateModal extends Component {
     user: PropTypes.object,
     usertypes: PropTypes.array,
     dispatch: PropTypes.func,
-    open: PropTypes.boolean,
-    modal: PropTypes.boolean
+    open: PropTypes.bool,
+    modal: PropTypes.bool
   }
   state = {
     open: false,
@@ -23,6 +27,16 @@ export default class UserCreateModal extends Component {
     usertypes: this.props.usertypes,
     errorText: '',
     modal: this.props.modal
+  };
+
+  initialState = {
+    name: '',
+    email: '',
+    usertype: 'admin',
+    active: true,
+    password: '',
+    passwordCheck: '',
+    errorText: '',
   };
 
   handleChange = event => {
@@ -49,11 +63,13 @@ export default class UserCreateModal extends Component {
   };
 // this block sends the new information out on submit
   handleSubmit = () => {
-    this.setState({open: false});
+    if (this.state.modal) {
+      this.setState({open: false});
+    }
     // this maps the string for usertype back to an integer for Id
     let usertypeId = 0;
-    for (var i = 0; i < this.props.usertypes.length; i++) {
-      if(this.state.usertype === this.props.usertypes[i].name){
+    for (let i = 0; i < this.props.usertypes.length; i++) {
+      if (this.state.usertype === this.props.usertypes[i].name) {
         usertypeId = this.props.usertypes[i].id;
       }
     }
@@ -70,9 +86,11 @@ export default class UserCreateModal extends Component {
   };
 
   handleClose = () => {
-    this.setState({open: false});
+    if (this.state.modal) {
+      this.setState({open: false});
+    }
+    this.setState(this.initialState);
   };
-
   render() {
     let wrapper;
     // this maps the usertypes array to possible choices in pulldown
@@ -82,16 +100,6 @@ export default class UserCreateModal extends Component {
         <MenuItem key={idx} value={usertype.name} primaryText={usertypeCapped}/>
       );
     });
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        onTouchTap={this.handleSubmit}
-      />
-    ];
     let innerWorkings = (
       <div>
         <TextField
@@ -141,25 +149,46 @@ export default class UserCreateModal extends Component {
     if (this.state.modal) {
       wrapper = (
         <div>
-          <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>New User</Button>
-          <Dialog
-            title="Create a New User"
-            autoDetectWindowHeight={false}
-            autoScrollBodyContent={false}
-            contentStyle={{width: "100%", maxHeight: "none"}}
-            onKeyDown={this.handleKeyPress}
-            actions={actions} open={this.state.open} >
+          <div>
+            <RaisedButton
+              labelStyle={{fontSize: '16px', lineHeight: '16px'}}
+              label="New User"
+              onTouchTap={this.handleOpen}
+              backgroundColor={green500}
+              labelColor="white"/>
+          </div>
+          <Modal
+            isOpen={this.state.open}
+            onRequestClose={this.handleClose}
+            shouldCloseOnOverlayClick={false}
+            overlayClassName={styles.OverlayClass}
+            contentLabel="Create a New User Test!">
+            <h2>Create New User</h2>
             {innerWorkings}
-          </Dialog>
+            <div className={styles.buttonGroup}>
+              <ModalButtons
+                onHandleCancel={this.handleClose}
+                onHandleSubmit={this.handleSubmit}
+                submitLabel="Create New User"
+                />
+            </div>
+          </Modal>
         </div>
-      )
+      );
     } else {
       wrapper = (
         <div>
-          <h2>Create a New User</h2>
+          <h2>Create New User</h2>
             {innerWorkings}
+            <div className={styles.buttonGroup}>
+              <ModalButtons
+                onHandleCancel={this.handleClose}
+                onHandleSubmit={this.handleSubmit}
+                submitLabel="Create New User"
+                />
+            </div>
         </div>
-      )
+      );
     }
 
     return (

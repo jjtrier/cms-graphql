@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import styles from './Users.css';
+import styles from './users.css';
 import {Table, Button} from 'react-bootstrap';
 import UserEditModal from './userEditModal.js';
 import UserCreateModal from './userCreateModal.js';
@@ -78,7 +78,6 @@ export default class Users extends Component {
         </tr>
     );
     });
-    console.log('template', template);
 
     const usertypes = self.props.usertypes;
     return (

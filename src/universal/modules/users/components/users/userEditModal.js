@@ -46,7 +46,6 @@ export default class UserEditModal extends Component {
 
   handleSubmit = () => {
     this.setState({open: false});
-    console.log('this.state from submit', this.state);
     // this maps the string for usertype back to an integer for Id
     let usertypeId = 0;
     for (var i = 0; i < this.props.usertypes.length; i++) {
