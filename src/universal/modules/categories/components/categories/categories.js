@@ -64,8 +64,9 @@ export default class Categories extends Component {
     // templatize the categories to be placed in Component
     let template = categories.map((category, idx) => {
       let entries = processEntries(category);
-      if(category.datatype === undefined || category.datatype === null) {
-        category.datatype = {name: 'no datatype'};}
+      if (category.datatype === undefined || category.datatype === null) {
+        category.datatype = {name: 'no datatype'};
+      }
       return (
         <tr key={idx}>
           <td>{category.id}</td>
@@ -73,12 +74,15 @@ export default class Categories extends Component {
           <td>{category.datatype.name}</td>
           <td>{entries}...</td>
           <td>{category.visible.toString()}</td>
-            <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
-              <CategoryEditModal category={category}
+          <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
+              <CategoryEditModal
+                category={category}
                 datatypes={self.props.datatypes}
                 dispatch={self.props.dispatch}/>
-            </ToggleDisplay>
-          <ToggleDisplay show={self.state.isAuthorized} tag="td"
+          </ToggleDisplay>
+          <ToggleDisplay
+            show={self.state.isAuthorized}
+            tag="td"
             className={styles._center}>
             <DeleteButton category={category} onItemClick={self.handleDelete}></DeleteButton>
           </ToggleDisplay>
@@ -90,9 +94,11 @@ export default class Categories extends Component {
     return (
       <div className={styles._container}>
         <h1>Categories</h1>
+        <div className={styles.createButton}>
           <CategoryCreateModal
             datatypes={datatypes}
             dispatch={dispatch}/>
+        </div>
         <Table striped bordered condensed hover>
           <thead>
             <tr>

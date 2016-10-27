@@ -42,7 +42,8 @@ export default class Projects extends Component {
     categories: PropTypes.array,
     users: PropTypes.array,
     dispatch: PropTypes.func,
-    auth: PropTypes.object
+    auth: PropTypes.object,
+    usertypes: PropTypes.array
   }
 
   state = {
@@ -103,6 +104,7 @@ export default class Projects extends Component {
               auth={self.props.auth}
               categories={self.props.categories}
               users={self.props.users}
+              usertypes={self.props.usertypes}
               dispatch={self.props.dispatch}/>
           </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td"

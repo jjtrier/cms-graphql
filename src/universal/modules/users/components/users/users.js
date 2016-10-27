@@ -85,7 +85,10 @@ export default class Users extends Component {
       <div className={styles._container}>
         <h1>Users</h1>
         <ToggleDisplay show={self.state.isAuthorized} tag="div">
-          <UserCreateModal usertypes={usertypes} dispatch={self.props.dispatch}/>
+          <UserCreateModal
+            usertypes={usertypes}
+            dispatch={self.props.dispatch}
+            modal={true}/>
         </ToggleDisplay>
         <Table striped bordered condensed hover>
           <thead>

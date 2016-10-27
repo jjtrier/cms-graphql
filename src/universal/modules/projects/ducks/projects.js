@@ -7,6 +7,7 @@ export const UPDATE_PROJECT = 'UPDATE_PROJECT';
 export const DELETE_PROJECT = 'DELETE_PROJECT';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 export const GET_ALL_USERS = 'GET_ALL_USERS';
+export const GET_ALL_USERTYPES = 'GET_ALL_USERTYPES';
 
 export const PROJECTS = 'projects';
 
@@ -14,7 +15,8 @@ const initialState = iMap({
   projects: iList(),
   project: iMap(),
   categories: iList(),
-  users: iList()
+  users: iList(),
+  usertypes: iList()
 });
 
 export function reducer(state = initialState, action) {
@@ -42,6 +44,10 @@ export function reducer(state = initialState, action) {
     case GET_ALL_USERS:
       return state.merge({
         users: fromJS(action.payload)
+      });
+    case GET_ALL_USERTYPES:
+      return state.merge({
+        usertypes: fromJS(action.payload)
       });
     case DELETE_PROJECT:
     default:
@@ -126,10 +132,12 @@ export function getUsersProjectsById(id) {
     const query = `
         query {
           getUsersProjectsById(id: ${id})
-          ${projectSchema}getAllUsers{id,name,email,usertype}
+          ${projectSchema}
+          getAllUsers{id,name,email,usertype}
+          getAllUserTypes{id,name,permissions{id,name}}
         }`;
     const {error, data} = await fetchGraphQL({query});
-    // console.log('data.getAllUsers', data.getAllUsers);
+    console.log('data.getAllUserTypes', data.getAllUserTypes);
     if (error) {
       console.error(error);
     } else {
@@ -140,6 +148,10 @@ export function getUsersProjectsById(id) {
       dispatch({
         type: GET_ALL_USERS,
         payload: data.getAllUsers
+      });
+      dispatch({
+        type: GET_ALL_USERTYPES,
+        payload: data.getAllUserTypes
       });
     }
   };

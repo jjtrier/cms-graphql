@@ -6,5 +6,8 @@ export const styles = {
   wrapper: {
     display: 'flex',
     justifyContent: 'space-around'
+  },
+  newUserButton: {
+    height: 32
   }
 };

@@ -2,8 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import {Dialog, FlatButton, TextField, Divider} from 'material-ui';
 import {blue300, green200} from 'material-ui/styles/colors';
 import {updateProject} from '../../ducks/projects.js';
+import UserCreateModal from '../../../users/components/users/userCreateModal.js';
 import {Button, ListGroup, ListGroupItem, Tabs, Tab, SplitButton, MenuItem, FormControl} from 'react-bootstrap';
-import {styles} from './modalStyles.js';
+import styles from './modalStyles.css';
+
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
 
 const chosenChecker = (item, checkAgainst) => {
@@ -36,7 +38,8 @@ export default class ProjectEditModal extends Component {
     auth: PropTypes.object,
     categories: PropTypes.array,
     users: PropTypes.array,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    usertypes: PropTypes.array
   }
   state = {
     tabKey: 1,
@@ -183,6 +186,7 @@ export default class ProjectEditModal extends Component {
     //
     // this is the main block of html for the edit project modal
     //
+    console.log('usertypes', this.props.usertypes);
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Project</Button>
@@ -192,7 +196,7 @@ export default class ProjectEditModal extends Component {
           actions={actions} open={this.state.open} >
 
           <div>
-            <div style={styles.wrapper}>
+            <div className={styles._wrapper}>
               <TextField
                 floatingLabelText="Name"
                 id="name"
@@ -214,7 +218,7 @@ export default class ProjectEditModal extends Component {
           <Tabs activeKey={this.state.tabKey} onSelect={that.handleSelectTab} id="project-edit-tabs">
 
             <Tab eventKey={1} title="Categories">
-              <div style={styles.wrapper}>
+              <div className={styles._wrapper}>
                 <ListGroup>
                   <ListGroupItem >Available Categories</ListGroupItem>
                   {templateAllCategories}
@@ -226,7 +230,17 @@ export default class ProjectEditModal extends Component {
             </Tab>
 
             <Tab eventKey={2} title="Users">
-              <div style={styles.wrapper}>
+              <div className={styles._wrapper}>
+                <Button
+                  bsStyle="success"
+                  bsSize="xsmall"
+                  onTouchTap={this.handleOpen}
+                  className={styles._newUserButton}
+                  >New User</Button>
+                  <UserCreateModal
+                    usertypes={this.props.usertypes}
+                    dispatch={this.props.dispatch}
+                    modal={true}/>
                 <ListGroup>
                   <ListGroupItem >Available Users</ListGroupItem>
                    <FormControl
