@@ -151,7 +151,8 @@ export default class UserCreateModal extends Component {
         <div>
           <div>
             <RaisedButton
-              labelStyle={{fontSize: '16px', lineHeight: '16px'}}
+              labelStyle={{fontSize: '12px', lineHeight: '12px', textTransform: 'none', textAlign: 'center'}}
+              style={{height: '28px', width: '50px'}}
               label="New User"
               onTouchTap={this.handleOpen}
               backgroundColor={green500}

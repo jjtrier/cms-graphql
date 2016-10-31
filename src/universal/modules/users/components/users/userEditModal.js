@@ -1,16 +1,19 @@
 import React, {Component, PropTypes} from 'react';
-import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
+import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem, RaisedButton} from 'material-ui';
+import Modal from 'react-modal';
+import ModalButtons from '../../../../components/modalButtons/modalButtons.js';
+import {green500} from 'material-ui/styles/colors';
 import {updateUser} from '../../ducks/users.js';
 import {Button} from 'react-bootstrap';
-/**
- * A modal dialog can only be closed by selecting one of the actions.
- */
+import styles from './users.css';
+
 export default class UserEditModal extends Component {
 
   static propTypes = {
     user: PropTypes.object,
     usertypes: PropTypes.array,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    modal: PropTypes.bool
   }
   state = {
     open: false,
@@ -22,7 +25,8 @@ export default class UserEditModal extends Component {
     password: '',
     passwordCheck: '',
     usertypes: this.props.usertypes,
-    errorText: ''
+    errorText: '',
+    modal: this.props.modal
   };
 
   handleChange = event => {
@@ -45,15 +49,16 @@ export default class UserEditModal extends Component {
   };
 
   handleSubmit = () => {
-    this.setState({open: false});
-    // this maps the string for usertype back to an integer for Id
+    if (this.state.modal) {
+      this.setState({open: false});
+    }    // this maps the string for usertype back to an integer for Id
     let usertypeId = 0;
-    for (var i = 0; i < this.props.usertypes.length; i++) {
-      if(this.state.usertype === this.props.usertypes[i].name){
+    for (let i = 0; i < this.props.usertypes.length; i++) {
+      if (this.state.usertype === this.props.usertypes[i].name) {
         usertypeId = this.props.usertypes[i].id;
       }
     }
-    let newUserInfo = {
+    let editUserInfo = {
       id: this.state.id,
       name: this.state.name,
       email: this.state.email,
@@ -61,84 +66,120 @@ export default class UserEditModal extends Component {
       active: this.state.active
     };
     if (this.state.password !== '' && (this.state.password === this.state.passwordCheck)) {
-      newUserInfo.password = this.state.password;
+      editUserInfo.password = this.state.password;
     }
-    this.props.dispatch(updateUser(newUserInfo));
+    this.props.dispatch(updateUser(editUserInfo));
   };
 
   handleClose = () => {
-    this.setState({open: false});
+    if (this.state.modal) {
+      this.setState({open: false});
+    }
   };
-
   render() {
+    let wrapper;
     // this maps the usertypes array to possible choices in pulldown
-    let userTypeItems = this.state.usertypes.map((usertype, idx) => {
+    let userTypeItems = this.props.usertypes.map((usertype, idx) => {
       let usertypeCapped = usertype.name.substr(0, 1).toUpperCase() + usertype.name.substr(1);
       return (
         <MenuItem key={idx} value={usertype.name} primaryText={usertypeCapped}/>
       );
     });
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        onTouchTap={this.handleSubmit}
-      />
-    ];
+    let innerWorkings = (
+      <div>
+        <TextField
+          floatingLabelText="Name"
+          id="name"
+          value={this.state.name}
+          onChange={this.handleChange}
+          name="Name"
+          />
+        <Divider/>
+        <TextField
+          floatingLabelText="Email"
+          id="email"
+          value={this.state.email}
+          onChange={this.handleChange}
+          />
+        <Divider/>
+        <SelectField value={this.state.usertype} id="usertypeSel" onChange={this.handleChangeUserType} floatingLabelText="User Type">
+          {userTypeItems}
+        </SelectField>
+        <Divider/>
+        <SelectField value={this.state.active}
+          id="activeSel"
+          onChange={this.handleChangeActive}
+          floatingLabelText="Active Status">
+          <MenuItem key={1} value={true} primaryText={'Active'}/>
+          <MenuItem key={2} value={false} primaryText={'Inactive'}/>
+        </SelectField>
+          <Divider/>
+        <TextField
+          floatingLabelText="Enter New Password"
+          id="password"
+          value={this.state.password}
+          onChange={this.handleChange}
+        />
+        <Divider/>
+        <TextField
+          floatingLabelText="Confirm New Password"
+          id="passwordCheck"
+          value={this.state.passwordCheck}
+          onChange={this.handleChange}
+          errorText={this.state.errorText}
+          onKeyDown={this.handleKeyPress}
+        />
+      </div>
+    );
+    if (this.state.modal) {
+      wrapper = (
+        <div>
+          <div>
+            <RaisedButton
+              labelStyle={{fontSize: '12px', lineHeight: '12px', textTransform: 'none'}}
+              style={{height: '22px', width: '24px'}}
+              label="Edit User"
+              onTouchTap={this.handleOpen}
+              backgroundColor={green500}
+              labelColor="white"/>
+          </div>
+          <Modal
+            isOpen={this.state.open}
+            onRequestClose={this.handleClose}
+            shouldCloseOnOverlayClick={false}
+            overlayClassName={styles.OverlayClass}
+            contentLabel="Edit User Test!">
+            <h2>Edit User</h2>
+            {innerWorkings}
+            <div className={styles.buttonGroup}>
+              <ModalButtons
+                onHandleCancel={this.handleClose}
+                onHandleSubmit={this.handleSubmit}
+                submitLabel="Submit User Edit"
+                />
+            </div>
+          </Modal>
+        </div>
+      );
+    } else {
+      wrapper = (
+        <div>
+          <h2>Edit User</h2>
+            {innerWorkings}
+            <div className={styles.buttonGroup}>
+              <ModalButtons
+                onHandleCancel={this.handleClose}
+                onHandleSubmit={this.handleSubmit}
+                submitLabel="Submit User Edit"
+                />
+            </div>
+        </div>
+      );
+    }
 
     return (
       <div>
-        <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit</Button>
-        <Dialog
-          title="Edit User"
-          autoDetectWindowHeight={false}
-          autoScrollBodyContent={false}
-          contentStyle={{width: "100%", maxHeight: "none"}}
-          actions={actions} open={this.state.open} >
-          <div>
-            <TextField
-              floatingLabelText="Name"
-              id="name"
-              value={this.state.name}
-              onChange={this.handleChange}
-              name="Name"
-              />
-            <Divider/>
-            <TextField
-              floatingLabelText="Email"
-              id="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-              />
-            <Divider/>
-            <SelectField value={this.state.usertype} id="usertypeSel" onChange={this.handleChangeUserType} floatingLabelText="User Type">
-              {userTypeItems}
-            </SelectField>
-            <Divider/>
-            <SelectField value={this.state.active} id="activeSel" onChange={this.handleChangeActive} floatingLabelText="Active Status">
-              <MenuItem key={1} value={true} primaryText={'Active'}/>
-              <MenuItem key={2} value={false} primaryText={'Inactive'}/>
-            </SelectField>
-              <Divider/>
-            <TextField
-              floatingLabelText="Enter New Password"
-              id="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-            />
-            <Divider/>
-            <TextField
-              floatingLabelText="Confirm New Password"
-              id="passwordCheck"
-              value={this.state.passwordCheck}
-              onChange={this.handleChange}
-              errorText={this.state.errorText}
-            />
-          </div>
-        </Dialog>
+        {wrapper}
       </div>
     );
   }

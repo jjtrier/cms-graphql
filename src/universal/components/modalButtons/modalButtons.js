@@ -14,11 +14,13 @@ export default class ModalButtons extends Component {
       <div>
         <RaisedButton
           label="Cancel"
+          labelStyle={{fontSize: '16px', lineHeight: '16px', textTransform: 'none'}}
           onTouchTap={this.props.onHandleCancel}
           className={styles.cancelButton}
           backgroundColor={yellow400}/>
         <RaisedButton
           label={this.props.submitLabel}
+          labelStyle={{fontSize: '16px', lineHeight: '16px', textTransform: 'none'}}
           onTouchTap={this.props.onHandleSubmit}
           backgroundColor={green700}
           labelColor="white"/>

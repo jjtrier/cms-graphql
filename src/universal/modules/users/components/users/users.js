@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import styles from './users.css';
-import {Table, Button} from 'react-bootstrap';
+import {Table} from 'react-bootstrap';
+import {RaisedButton} from 'material-ui';
+import {red800} from 'material-ui/styles/colors';
 import UserEditModal from './userEditModal.js';
 import UserCreateModal from './userCreateModal.js';
 import {deleteUser} from '../../ducks/users.js';
@@ -13,7 +15,13 @@ let DeleteButton = React.createClass({
   },
   render() {
     return (
-      <Button bsStyle="danger" bsSize="xsmall" onClick={this._onClick}>Delete</Button>
+      <RaisedButton
+        labelStyle={{fontSize: '12px', lineHeight: '12px', textTransform: 'none'}}
+        style={{height: '22px', width: '24px'}}
+        label="Delete User"
+        onTouchTap={this._onClick}
+        backgroundColor={red800}
+        labelColor="white"/>
     );
   },
   _onClick() {
@@ -70,7 +78,10 @@ export default class Users extends Component {
           <td>{processPermissions(user.permissions)}</td>
           <td>{user.usertype}</td>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
-            <UserEditModal user={user} usertypes={self.props.usertypes} dispatch={self.props.dispatch}/>
+            <UserEditModal user={user}
+              usertypes={self.props.usertypes}
+              modal={true}
+              dispatch={self.props.dispatch}/>
           </ToggleDisplay>
           <ToggleDisplay show={self.state.isAuthorized} tag="td">
             <DeleteButton user={user} onItemClick={self.handleDelete}></DeleteButton>
