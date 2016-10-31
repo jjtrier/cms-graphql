@@ -4,7 +4,6 @@ import Modal from 'react-modal';
 import ModalButtons from '../../../../components/modalButtons/modalButtons.js';
 import {green500} from 'material-ui/styles/colors';
 import {createUser} from '../../ducks/users.js';
-import {Button} from 'react-bootstrap';
 import styles from './users.css';
 
 export default class UserCreateModal extends Component {
