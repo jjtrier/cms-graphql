@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {TextField, Divider, SelectField, MenuItem, RaisedButton} from 'material-ui';
 import Modal from 'react-modal';
 import ModalButtons from '../../../../components/modalButtons/modalButtons.js';
+import {getAllUsers} from '../../../projects/ducks/projects.js';
 import {green500} from 'material-ui/styles/colors';
 import {createUser} from '../../ducks/users.js';
 import styles from './users.css';
@@ -13,7 +14,8 @@ export default class UserCreateModal extends Component {
     usertypes: PropTypes.array,
     dispatch: PropTypes.func,
     open: PropTypes.bool,
-    modal: PropTypes.bool
+    modal: PropTypes.bool,
+    refreshOnReturn: PropTypes.bool
   }
   state = {
     open: false,
@@ -25,7 +27,8 @@ export default class UserCreateModal extends Component {
     passwordCheck: '',
     usertypes: this.props.usertypes,
     errorText: '',
-    modal: this.props.modal
+    modal: this.props.modal,
+    refreshOnReturn: this.props.refreshOnReturn
   };
 
   initialState = {
@@ -62,9 +65,6 @@ export default class UserCreateModal extends Component {
   };
 // this block sends the new information out on submit
   handleSubmit = () => {
-    if (this.state.modal) {
-      this.setState({open: false});
-    }
     // this maps the string for usertype back to an integer for Id
     let usertypeId = 0;
     for (let i = 0; i < this.props.usertypes.length; i++) {
@@ -81,7 +81,13 @@ export default class UserCreateModal extends Component {
     if (this.state.password !== '' && (this.state.password === this.state.passwordCheck)) {
       newUserInfo.password = this.state.password;
     }
-    this.props.dispatch(createUser(newUserInfo));
+    this.props.dispatch(createUser(newUserInfo, this.state.refreshOnReturn));
+    if (this.state.refreshOnReturn) {
+      this.props.dispatch(getAllUsers());
+    }
+    if (this.state.modal) {
+      this.setState({open: false});
+    }
   };
 
   handleClose = () => {

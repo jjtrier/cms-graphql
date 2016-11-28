@@ -78,6 +78,7 @@ export default class UserEditModal extends Component {
   };
   render() {
     let wrapper;
+    const editUserName = `Edit User: ${this.state.name}`;
     // this maps the usertypes array to possible choices in pulldown
     let userTypeItems = this.props.usertypes.map((usertype, idx) => {
       let usertypeCapped = usertype.name.substr(0, 1).toUpperCase() + usertype.name.substr(1);
@@ -149,7 +150,7 @@ export default class UserEditModal extends Component {
             shouldCloseOnOverlayClick={false}
             overlayClassName={styles.OverlayClass}
             contentLabel="Edit User Test!">
-            <h2>Edit User</h2>
+            <h2>{editUserName}</h2>
             {innerWorkings}
             <div className={styles.buttonGroup}>
               <ModalButtons
@@ -164,7 +165,7 @@ export default class UserEditModal extends Component {
     } else {
       wrapper = (
         <div>
-          <h2>Edit User</h2>
+          <h2>{editUserName}</h2>
             {innerWorkings}
             <div className={styles.buttonGroup}>
               <ModalButtons

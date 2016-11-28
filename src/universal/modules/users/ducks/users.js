@@ -1,5 +1,6 @@
 import {fromJS, Map as iMap, List as iList} from 'immutable';
 import {fetchGraphQL} from '../../../utils/fetching';
+import {getAllUsers} from '../../projects/ducks/projects.js';
 
 export const GET_USERS = 'GET_USERS';
 export const GET_USERTYPES = 'GET_USERTYPES';
@@ -43,7 +44,7 @@ export function reducer(state = initialState, action) {
 }
 // get all users
 //
-export function getUsers() {
+export function getUsers(sendBack) {
   const userSchema =
   `
     {
@@ -64,7 +65,11 @@ export function getUsers() {
     const {error, data} = await fetchGraphQL({query});
     if (error) {
       console.error(error);
-    } else {
+    }
+    if (sendBack) {
+      return data.getAllUsers;
+    }
+    else {
       dispatch({
         type: GET_USERS,
         payload: data.getAllUsers
@@ -101,7 +106,7 @@ export function getAllUserTypes() {
 }
 // create a User
 //
-export function createUser(user) {
+export function createUser(user, refreshSetting) {
   const userMutation =
   `
   (
@@ -129,11 +134,18 @@ export function createUser(user) {
     if (error) {
       console.error(error);
     } else {
+      console.log('inside createUser callback inside users.js');
       await dispatch({
         type: CREATE_USER,
         payload: data.createUser
       });
-      await dispatch(getUsers());
+      if (refreshSetting) {
+        // send out a call to refresh users inside projects ducks
+        console.log('inside create user, now dispatching getAllUsers');
+        await dispatch(getAllUsers());
+      } else {
+        await dispatch(getUsers());
+      }
     }
   };
 };

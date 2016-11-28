@@ -1,5 +1,6 @@
 import {fromJS, Map as iMap, List as iList} from 'immutable';
 import {fetchGraphQL} from '../../../utils/fetching';
+import {getUsers} from '../../users/ducks/users.js';
 
 export const GET_PROJECTS = 'GET_PROJECTS';
 export const GET_PROJECTS_BY_USER = 'GET_PROJECTS_BY_USER';
@@ -106,6 +107,7 @@ export function getUsersProjectsById(id) {
     id
     name
     description
+    users{id,email,active,usertype,name}
     categories{id,name,visible,
       entries{id,title,projectId,datatypeId,visible,data,categoryId}
       datatype{
@@ -137,7 +139,6 @@ export function getUsersProjectsById(id) {
           getAllUserTypes{id,name,permissions{id,name}}
         }`;
     const {error, data} = await fetchGraphQL({query});
-    console.log('data.getAllUserTypes', data.getAllUserTypes);
     if (error) {
       console.error(error);
     } else {
@@ -223,6 +224,38 @@ export function getAllCategories() {
       dispatch({
         type: GET_CATEGORIES,
         payload: data.getAllCategories
+      });
+    }
+  };
+}
+
+export function getAllUsers() {
+  const userSchema =
+  `
+    {
+      email,
+      id,
+      name,
+      active,
+      permissions,
+      usertype
+    }
+  `;
+  return async(dispatch, getState) => {
+    const query = `
+        query {
+          getAllUsers
+          ${userSchema}
+        }`;
+    const {error, data} = await fetchGraphQL({query});
+    if (error) {
+      console.error(error);
+    }
+    else {
+      console.log('data in here', data.getAllUsers);
+      dispatch({
+        type: GET_ALL_USERS,
+        payload: data.getAllUsers
       });
     }
   };

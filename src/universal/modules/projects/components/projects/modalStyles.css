@@ -11,3 +11,22 @@
   ._newUserButton {
     height: 32px
   }
+  .OverlayClass {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .buttonGroup {
+    position: relative;
+    width:300px;
+    left: 73%;
+  }
+  .cancelButton {
+    margin-right: 40px
+  }
+  .mainPageAddButton {
+    height: 24px
+  }

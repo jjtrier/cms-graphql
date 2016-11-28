@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
-import {Dialog, FlatButton, TextField, Divider} from 'material-ui';
+import {FlatButton, TextField, Divider} from 'material-ui';
 import {blue300, green200} from 'material-ui/styles/colors';
+import Modal from 'react-modal';
+import ModalButtons from '../../../../components/modalButtons/modalButtons.js';
 import {updateProject} from '../../ducks/projects.js';
 import UserCreateModal from '../../../users/components/users/userCreateModal.js';
 import {Button, ListGroup, ListGroupItem, Tabs, Tab, SplitButton, MenuItem, FormControl} from 'react-bootstrap';
@@ -20,7 +22,7 @@ const chosenChecker = (item, checkAgainst) => {
   return {result: res, count};
 };
 
-const idsFromCategories = fields => {
+const idsFromArrayOfObjects = fields => {
   let ids = [];
   for (let i = 0; i < fields.length; i++) {
     ids.push(fields[i].id);
@@ -49,7 +51,8 @@ export default class ProjectEditModal extends Component {
     description: this.props.project.description,
     categories: this.props.project.categories,
     errorText: '',
-    filterUserValue: ''
+    filterUserValue: '',
+    users: this.props.project.users
   };
   _handleEscKey = event => {
     if (event.keyCode === 27) {
@@ -79,15 +82,23 @@ export default class ProjectEditModal extends Component {
   handleOpen = () => {
     this.setState({open: true});
   };
-
+// this handles the submit button to edit the Project
   handleSubmit = () => {
     this.setState({open: false});
+
+    // const userIDArray = () => {
+    //   let idArray = [];
+    //   this.state.users.forEach(user => {
+    //     idArray.push(user.id);
+    //   });
+    // };
 
     let newProjectInfo = {
       id: this.state.id,
       name: this.state.name,
       description: this.state.description,
-      categories: idsFromCategories(this.state.categories)
+      categories: idsFromArrayOfObjects(this.state.categories),
+      users: idsFromArrayOfObjects(this.state.users)
     };
     JSON.stringify(newProjectInfo);
     let userId = this.props.auth.user.id;
@@ -150,6 +161,24 @@ export default class ProjectEditModal extends Component {
         </ListGroupItem>
       );
     });
+    // following is function to handle adding users to the current project
+    const addUserToProject = newUserInput => {
+      let previousStateUsers = this.state.users;
+      previousStateUsers.push(newUserInput);
+      this.setState(
+        {users: previousStateUsers}
+      );
+    }
+    // following is function to handle removing users from the current project
+    const removeUserFromProject = removeUserInput => {
+      let previousStateUsers = this.state.users;
+      previousStateUsers = previousStateUsers.filter(user => {
+        return (user.id !== removeUserInput.id)
+      });
+      this.setState(
+        {users: previousStateUsers}
+      );
+    }
     // available users
     // templatize all available users to be buttons in Component
     let allUsers = this.props.users;
@@ -157,45 +186,28 @@ export default class ProjectEditModal extends Component {
       const userName = user.name.toLowerCase();
       return (userName.includes(this.state.filterUserValue));
     });
-    // console.log('befpre', allUsers);
-    // allUsers = allUsers.sort((a, b) => {
-    //   const alastName = a.name.split(' ')[0];
-    //   const blastName = b.name.split(' ')[0];
-    //   if (alastName > blastName) {
-    //     return -1}
-    //   if (alastName < blastName) {
-    //     return 1}
-    //   else return 0;
-    // });
-    // console.log(allUsers);
 
-    let templateAllUsers = allUsers.map((user, idx) => {
-      let backgroundColor = blue300;
-      return (
-        <ListGroupItem key={idx}>
-          <SplitButton title={user.name} pullRight id={user.id}>
-            <MenuItem eventKey="1">Action</MenuItem>
-            <MenuItem eventKey="2">Another action</MenuItem>
-            <MenuItem eventKey="3">Something else here</MenuItem>
-          </SplitButton>
-        </ListGroupItem>
-      );
-    });
+    let templateAllUsers = mapUsers(allUsers, addUserToProject, "Add To Project");
     const editProjectName = (`Edit Project: ${this.state.id}`);
+    // users that are on the project
+    // templatize all chosen users to be buttons in Component
+    let templateUsersOnProject = mapUsers(this.state.users, removeUserFromProject, "Remove From Project");
+
     let that = this;
     //
     // this is the main block of html for the edit project modal
     //
-    console.log('usertypes', this.props.usertypes);
     return (
       <div>
         <Button bsStyle="info" bsSize="xsmall" onTouchTap={this.handleOpen}>Edit Project</Button>
-        <Dialog
-          title={editProjectName}
-          contentStyle={{width: "80%", height: "100%", maxHeight: "none", maxWidth: "none", fontSize: "10px"}}
-          actions={actions} open={this.state.open} >
-
+          <Modal
+            isOpen={this.state.open}
+            onRequestClose={this.handleClose}
+            shouldCloseOnOverlayClick={false}
+            overlayClassName={styles.OverlayClass}
+            contentLabel="Edit Project Test!">
           <div>
+            <h2>{editProjectName}</h2>
             <div className={styles._wrapper}>
               <TextField
                 floatingLabelText="Name"
@@ -231,15 +243,10 @@ export default class ProjectEditModal extends Component {
 
             <Tab eventKey={2} title="Users">
               <div className={styles._wrapper}>
-                <Button
-                  bsStyle="success"
-                  bsSize="xsmall"
-                  onTouchTap={this.handleOpen}
-                  className={styles._newUserButton}
-                  >New User</Button>
                   <UserCreateModal
                     usertypes={this.props.usertypes}
                     dispatch={this.props.dispatch}
+                    refreshOnReturn={true}
                     modal={true}/>
                 <ListGroup>
                   <ListGroupItem >Available Users</ListGroupItem>
@@ -252,14 +259,60 @@ export default class ProjectEditModal extends Component {
                   {templateAllUsers}
                 </ListGroup>
                 <ListGroup>
-                  {templateAllUsers}
+                  <ListGroupItem >Users On Project</ListGroupItem>
+                  {templateUsersOnProject}
                 </ListGroup>
               </div>
             </Tab>
           </Tabs>
-
-        </Dialog>
+          <div className={styles.buttonGroup}>
+            <ModalButtons
+              onHandleCancel={this.handleClose}
+              onHandleSubmit={this.handleSubmit}
+              submitLabel="Submit Project Edit"
+              />
+          </div>
+        </Modal>
       </div>
     );
   }
 }
+
+const mapUsers = (userList, actionOne, actionOneTitle) => {
+return userList.map((user, idx) => {
+  let backgroundColor = blue300;
+  return (
+    <ListGroupItem key={idx}>
+      <SplitButton title={user.name} pullRight id={user.id}>
+        <MenuItem eventKey="1">
+          <ButtonBuilder
+            user={user}
+            onItemClick={actionOne}
+            buttonTitle={actionOneTitle}
+            >
+          </ButtonBuilder>
+
+        </MenuItem>
+        <MenuItem eventKey="2">Another action</MenuItem>
+        <MenuItem eventKey="3">Something else here</MenuItem>
+      </SplitButton>
+    </ListGroupItem>
+  );
+});
+};
+
+let ButtonBuilder = React.createClass({
+  propTypes: {
+    onItemClick: PropTypes.func,
+    user: PropTypes.object,
+    buttonTitle: PropTypes.string
+  },
+  render() {
+    return (
+      <Button bsStyle="primary" bsSize="xsmall" onClick={this._onClick}>{this.props.buttonTitle}</Button>
+    );
+  },
+  _onClick() {
+    this.props.onItemClick(this.props.user);
+  }
+});
