@@ -160,7 +160,8 @@ export default class ProjectEditModal extends Component {
       const userName = user.name.toLowerCase();
       return (userName.includes(this.state.filterUserValue));
     });
-// mapUsers is used to build a user list item, with all of the yummy actions added to is
+// mapUsers is used to build a user list item, with all of the yummy actions added to it
+// below are available actions on the user flyaway menu
     const arrayOfAvailableUserActions = [
       {action: addUserToProject,
         title: "Add To Project"

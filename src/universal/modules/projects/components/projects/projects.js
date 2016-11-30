@@ -90,8 +90,9 @@ export default class Projects extends Component {
       let categoryNames = [];
       if (project.categories.length > 0 ) {
         categoryNames = project.categories.map(category => category.name).reduce((previousValue, currentValue) => {return previousValue + ',' + currentValue });
-      } else {categoryNames = <div>none...</div>;}
-
+      } else {
+        categoryNames = <div>none...</div>;
+        }
       return (
         <tr key={idx}>
           <td>{project.id}</td>

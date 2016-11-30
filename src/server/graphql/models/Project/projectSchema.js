@@ -52,12 +52,6 @@ export const Project = new GraphQLObjectType({
           return project.getUsers();
         }
       },
-      developerUsers: {
-        type: new GraphQLList(User),
-        resolve(project) {
-          return project.getProjectUsersByType('developer');
-        }
-      },
       taggedUsers: {
         type: new GraphQLList(RoleTaggedUser),
         resolve(project) {

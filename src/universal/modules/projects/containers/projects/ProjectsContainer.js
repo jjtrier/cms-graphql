@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Projects from '../../components/projects/projects';
-import {getAllProjects, getUsersProjectsById, getAllCategories} from '../../ducks/projects.js';
+import {getAllProjects, getUsersProjectsById} from '../../ducks/projects.js';
 import {loginToken} from '../../../auth/ducks/auth.js'
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import {ensureState} from 'redux-optimistic-ui';
@@ -19,12 +18,11 @@ export default class ProjectsContainer extends Component {
   constructor(props) {
     super(props);
     const {dispatch} = props;
-    // dispatch(getAllProjects());
     dispatch(loginToken());
-    dispatch(getAllCategories());
-    // dispatch(getAllProjects());
-    // dispatch(getUsersProjectsById(props.auth.user.id));
-    dispatch(getUsersProjectsById(Number(this.props.params.user) || props.auth.user.id));
+    // dispatch(getAllCategories());
+    dispatch(getAllProjects());
+    // use below if setting up to only show projects related to a user
+    // dispatch(getUsersProjectsById(Number(this.props.params.user) || props.auth.user.id));
   }
   render() {
     return <Projects {...this.props} {...this.props.data} {...this.props.auth}/>;
@@ -33,7 +31,6 @@ export default class ProjectsContainer extends Component {
 
 function mapStateToProps(state) {
   state = ensureState(state);
-  // console.log('state',state);
   return {
     data: state.get('projects').toJS(),
     auth: state.get('auth').toJS()

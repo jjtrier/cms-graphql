@@ -56,13 +56,14 @@ export function reducer(state = initialState, action) {
   }
 }
 //
+// get all projects
 export function getAllProjects() {
   const projectSchema =
   `{
     id
     name
     description
-    users{id,name, email, usertype}
+    users{id,email,active,usertype,name}
     categories{id,name,visible,
       entries{id,title,projectId,datatypeId,visible,data,categoryId}
       datatype{
@@ -78,17 +79,19 @@ export function getAllProjects() {
       }
     }}
   }`;
-  return async(dispatch, getState) => {
+  return async dispatch => {
     const query = `
         query {
           getAllProjects
-          ${projectSchema}getAllUsers{id,name,email,usertype}
+          ${projectSchema}
+          getAllUsers{id,name,email,usertype}
+          getAllUserTypes{id,name,permissions{id,name}}
+          getAllCategories{id,name,visible,entries{id,title}}
         }`;
     const {error, data} = await fetchGraphQL({query});
     if (error) {
       console.error(error);
     } else {
-      console.log('made it here', data.getAllProjects);
       dispatch({
         type: GET_PROJECTS,
         payload: data.getAllProjects
@@ -96,6 +99,14 @@ export function getAllProjects() {
       dispatch({
         type: GET_ALL_USERS,
         payload: data.getAllUsers
+      });
+      dispatch({
+        type: GET_ALL_USERTYPES,
+        payload: data.getAllUserTypes
+      });
+      dispatch({
+        type: GET_CATEGORIES,
+        payload: data.getAllCategories
       });
     }
   };
@@ -137,6 +148,7 @@ export function getUsersProjectsById(id) {
           ${projectSchema}
           getAllUsers{id,name,email,usertype}
           getAllUserTypes{id,name,permissions{id,name}}
+          getAllCategories{id,name,visible,entries{id,title}}
         }`;
     const {error, data} = await fetchGraphQL({query});
     if (error) {
@@ -153,6 +165,10 @@ export function getUsersProjectsById(id) {
       dispatch({
         type: GET_ALL_USERTYPES,
         payload: data.getAllUserTypes
+      });
+      dispatch({
+        type: GET_CATEGORIES,
+        payload: data.getAllCategories
       });
     }
   };
@@ -208,55 +224,55 @@ export function deleteProject(id, userId) {
   };
 }
 //
-export function getAllCategories() {
-  const categorySchema =
-  `{id,name,visible,entries{id,title}}`;
-  return async(dispatch, getState) => {
-    const query = `
-        query {
-          getAllCategories
-          ${categorySchema}
-        }`;
-    const {error, data} = await fetchGraphQL({query});
-    if (error) {
-      console.error(error);
-    } else {
-      dispatch({
-        type: GET_CATEGORIES,
-        payload: data.getAllCategories
-      });
-    }
-  };
-}
-
-export function getAllUsers() {
-  const userSchema =
-  `
-    {
-      email,
-      id,
-      name,
-      active,
-      permissions,
-      usertype
-    }
-  `;
-  return async(dispatch, getState) => {
-    const query = `
-        query {
-          getAllUsers
-          ${userSchema}
-        }`;
-    const {error, data} = await fetchGraphQL({query});
-    if (error) {
-      console.error(error);
-    }
-    else {
-      console.log('data in here', data.getAllUsers);
-      dispatch({
-        type: GET_ALL_USERS,
-        payload: data.getAllUsers
-      });
-    }
-  };
-}
+// export function getAllCategories() {
+//   const categorySchema =
+//   `{id,name,visible,entries{id,title}}`;
+//   return async(dispatch, getState) => {
+//     const query = `
+//         query {
+//           getAllCategories
+//           ${categorySchema}
+//         }`;
+//     const {error, data} = await fetchGraphQL({query});
+//     if (error) {
+//       console.error(error);
+//     } else {
+//       dispatch({
+//         type: GET_CATEGORIES,
+//         payload: data.getAllCategories
+//       });
+//     }
+//   };
+// }
+//
+// export function getAllUsers() {
+//   const userSchema =
+//   `
+//     {
+//       email,
+//       id,
+//       name,
+//       active,
+//       permissions,
+//       usertype
+//     }
+//   `;
+//   return async(dispatch, getState) => {
+//     const query = `
+//         query {
+//           getAllUsers
+//           ${userSchema}
+//         }`;
+//     const {error, data} = await fetchGraphQL({query});
+//     if (error) {
+//       console.error(error);
+//     }
+//     else {
+//       console.log('data in here', data.getAllUsers);
+//       dispatch({
+//         type: GET_ALL_USERS,
+//         payload: data.getAllUsers
+//       });
+//     }
+//   };
+// }
