@@ -7,28 +7,9 @@ import {updateProject} from '../../ducks/projects.js';
 import UserCreateModal from '../../../users/components/users/userCreateModal.js';
 import {Button, ListGroup, ListGroupItem, Tabs, Tab, SplitButton, MenuItem, FormControl} from 'react-bootstrap';
 import styles from './modalStyles.css';
-
+import {mapUsers, ButtonBuilder} from './subComponents/mapUsers';
+import {chosenChecker, idsFromArrayOfObjects} from './subComponents/utilityFunctions';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
-
-const chosenChecker = (item, checkAgainst) => {
-  let res = false;
-  let count = 0;
-  checkAgainst.forEach(check => {
-    if (check.id === item.id) {
-      count++;
-      res = true;
-    }
-  });
-  return {result: res, count};
-};
-
-const idsFromArrayOfObjects = fields => {
-  let ids = [];
-  for (let i = 0; i < fields.length; i++) {
-    ids.push(fields[i].id);
-  }
-  return ids;
-};
 
 export default class ProjectEditModal extends Component {
   constructor(props) {
@@ -78,20 +59,13 @@ export default class ProjectEditModal extends Component {
   handleCategoryChipAdd = category => {
     this.setState({categories: this.state.categories.concat([category])});
   }
-
+  // this handles the opening of then main project edit modal
   handleOpen = () => {
     this.setState({open: true});
   };
 // this handles the submit button to edit the Project
   handleSubmit = () => {
     this.setState({open: false});
-
-    // const userIDArray = () => {
-    //   let idArray = [];
-    //   this.state.users.forEach(user => {
-    //     idArray.push(user.id);
-    //   });
-    // };
 
     let newProjectInfo = {
       id: this.state.id,
@@ -277,42 +251,3 @@ export default class ProjectEditModal extends Component {
     );
   }
 }
-
-const mapUsers = (userList, actionOne, actionOneTitle) => {
-return userList.map((user, idx) => {
-  let backgroundColor = blue300;
-  return (
-    <ListGroupItem key={idx}>
-      <SplitButton title={user.name} pullRight id={user.id}>
-        <MenuItem eventKey="1">
-          <ButtonBuilder
-            user={user}
-            onItemClick={actionOne}
-            buttonTitle={actionOneTitle}
-            >
-          </ButtonBuilder>
-
-        </MenuItem>
-        <MenuItem eventKey="2">Another action</MenuItem>
-        <MenuItem eventKey="3">Something else here</MenuItem>
-      </SplitButton>
-    </ListGroupItem>
-  );
-});
-};
-
-let ButtonBuilder = React.createClass({
-  propTypes: {
-    onItemClick: PropTypes.func,
-    user: PropTypes.object,
-    buttonTitle: PropTypes.string
-  },
-  render() {
-    return (
-      <Button bsStyle="primary" bsSize="xsmall" onClick={this._onClick}>{this.props.buttonTitle}</Button>
-    );
-  },
-  _onClick() {
-    this.props.onItemClick(this.props.user);
-  }
-});

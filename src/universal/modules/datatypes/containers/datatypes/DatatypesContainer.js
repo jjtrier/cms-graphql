@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Datatypes from '../../components/datatypes/datatypes';
 import {getDatatypes, getFields} from '../../ducks/datatypesDucks.js';
-import {loginToken} from '../../../auth/ducks/auth.js'
+import {loginToken} from '../../../auth/ducks/auth.js';
 import {connect} from 'react-redux';
 
 import {ensureState} from 'redux-optimistic-ui';

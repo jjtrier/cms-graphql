@@ -1,1 +1,2 @@
--Add confirmation dialog to any UI controls that delete and object
+- Add confirmation dialog to any UI controls that delete and object
+- Implement entire feed architecture

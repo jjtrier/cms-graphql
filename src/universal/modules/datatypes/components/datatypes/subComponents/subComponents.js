@@ -1,8 +1,9 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import Chip from 'material-ui/Chip';
 import {styles} from '../modalStyles.js';
 import {green200} from 'material-ui/styles/colors';
 
+// this file contains the code to create the individual chips for display
 export const DeletableChip = React.createClass({
   propTypes: {
     onDeleteClick: PropTypes.func,

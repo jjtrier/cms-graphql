@@ -1,3 +1,5 @@
+Adding a table to the database;
+
 When adding a new table to the database, start with defining the table and fields within src/server/database/models.  That file is required into the index.js, where any relations are also mapped.
 
 That table needs to be added to graphql.  src/server/database/graphql/models

@@ -6,6 +6,7 @@ import DatatypeCreateModal from './datatypeCreateModal.js';
 import {deleteDatatype} from '../../ducks/datatypesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
+// this class creates delete button used in diplay of Datatypes
 let DeleteButton = React.createClass({
   propTypes: {
     onItemClick: PropTypes.func,

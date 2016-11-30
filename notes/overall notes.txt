@@ -1,4 +1,9 @@
+This CMS project was started from the following boilerplate;
+https://github.com/mattkrick/meatier
+
 Postgres needs to be running on host machine. 9.5.4 on Mac was used for development.
+
+This project requires Node v6.4.0 exactly.  Used NVM to install that on local machine.
 
 Create a new Postgres DB named relay_test for testing, and relay for production.
 
@@ -8,8 +13,20 @@ npm run seed to seed development server
 
 npm run test to run tests
 
+the site entry point is;
+http://localhost:3000/
+username: admin123@gmail.com
+password: password
+
+the graphql query sandbox is;
+http://localhost:3000/graphql
+you need to be logged in to use the sandbox
+
 To run an individual sequelize test, example;
 NODE_ENV=testing mocha test/sequelize/db.project.test.js --compilers js:babel-core/register --require babel-polyfill
 
 To run and individual graphql test, example;
 NODE_ENV=testing mocha test/graphql/graphql.field.noServer.test.js --compilers js:babel-core/register --require babel-polyfill
+
+The tests are good indicators of how to query graphql.
+I started transitioning the tests to properly use variables when querying graphql.  A good working example is in the test file graphql.project.noServer.test.js, and then look at 'createProject' test starting on line 102

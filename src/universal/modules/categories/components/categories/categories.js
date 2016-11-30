@@ -6,6 +6,7 @@ import CategoryCreateModal from './categoryCreateModal.js';
 import {deleteCategory, getAllCategories} from '../../ducks/categoriesDucks.js';
 import ToggleDisplay from 'react-toggle-display';
 
+// this class is used to create the delete button that is used on each category display line, the clickHandler is passed in
 let DeleteButton = React.createClass({
   propTypes: {
     onItemClick: PropTypes.func,
@@ -32,7 +33,7 @@ export default class Categories extends Component {
   state = {
     isAuthorized: false
   }
-
+  //following is clickHandler for deleting a category
   handleDelete = id => {
     this.props.dispatch(deleteCategory(id));
     this.props.dispatch(getAllCategories());
@@ -45,7 +46,7 @@ export default class Categories extends Component {
     }
     return false;
   }
-
+// permission to make edits is determined by the usertype of the current user, and passed in through props
   componentWillUpdate(nextProps) {
     const self = this;
     if (nextProps.auth.user.permissions !== self.props.auth.user.permissions) {
@@ -74,6 +75,7 @@ export default class Categories extends Component {
           <td>{category.datatype.name}</td>
           <td>{entries}...</td>
           <td>{category.visible.toString()}</td>
+          {/* ToggleDisplay is a library that shows or hides content based on the value of 'show' */}
           <ToggleDisplay show={self.state.isAuthorized} tag="td" className={styles._center}>
               <CategoryEditModal
                 category={category}
@@ -95,6 +97,7 @@ export default class Categories extends Component {
       <div className={styles._container}>
         <h1>Categories</h1>
         <div className={styles.createButton}>
+          {/* CategoryCreateModal has the open button inside of it, and is displayed here*/}
           <CategoryCreateModal
             datatypes={datatypes}
             dispatch={dispatch}/>
@@ -120,6 +123,7 @@ export default class Categories extends Component {
   }
 }
 
+// this creates a string from the entry names for display in the list view
 const processEntries = category => {
   let entries = [];
   for (let i = 0; i < category.entries.length; i++) {

@@ -1,3 +1,5 @@
+Adding a module to the front end;
+
 - Duplicate one of the existing folders inside src/universal/modules
 - Rename all folders and files within
 

@@ -2,12 +2,13 @@ import React, {Component, PropTypes} from 'react';
 // import keydown from 'react-keydown';
 import stylesToo from './datatypes.css';
 import {Dialog, FlatButton, TextField, Divider, SelectField, MenuItem} from 'material-ui';
-import {blue300, indigo900, green200} from 'material-ui/styles/colors';
+import {blue300, green200} from 'material-ui/styles/colors';
 import {createDatatype} from '../../ducks/datatypesDucks.js';
 import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {styles} from './modalStyles.js';
 import {DeletableChip, AddableChip} from './subComponents/subComponents.js';
 
+// following is used in the creation of the chips displaying available fields
 const chosenChecker = (item, checkAgainst) => {
   let res = false;
   let count = 0;
@@ -20,6 +21,7 @@ const chosenChecker = (item, checkAgainst) => {
   return {result: res, count};
 };
 
+// following is used when preparing data to be sent to graphql mutation, fields needs to be an array of ids
 const idsFromFields = fields => {
   let ids = [];
   for (let i = 0; i < fields.length; i++) {
@@ -68,16 +70,17 @@ export default class DatatypeCreateModal extends Component {
     newFields = this.state.fields.filter(field => field.id !== id);
     this.setState({fields: newFields});
   }
+
   handleChipAdd = field => {
     this.setState({fields: this.state.fields.concat([field])});
   }
-
+  // this handles changing the value on a datatype called 'visible'
   handleChangeVisible = (event, index, value) => this.setState({visible: value});
-
+  // handles opening of the modal
   handleOpen = () => {
     this.setState({open: true});
   };
-
+  // handles submission of the data, and then closing of the modal
   handleSubmit = () => {
     this.setState({open: false});
 
@@ -90,7 +93,7 @@ export default class DatatypeCreateModal extends Component {
     JSON.stringify(newDatatypeInfo);
     this.props.dispatch(createDatatype(newDatatypeInfo));
   };
-// this handles the closing of the modal/dialog
+// this handles the closing of the modal/dialog and resetting the blank data
   handleClose = () => {
     this.setState({
       open: false,

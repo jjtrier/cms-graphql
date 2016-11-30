@@ -59,7 +59,7 @@ export default class CategoryCreateModal extends Component {
       category: this.props.category
     });
   };
-  // this handles the submission of changed data
+  // this handles the submission of changed data to the function inside ducks
   handleSubmit = () => {
     this.setState({open: false});
     let createCategoryInfo = {
@@ -69,13 +69,14 @@ export default class CategoryCreateModal extends Component {
     };
     this.props.dispatch(createCategory(createCategoryInfo));
   };
+  // below is to handle error when the datatype is undefined
   componentWillMount() {
     if (this.state.datatype === undefined) {
       this.setState({datatype: {id: 1}})
     }
   }
   render() {
-    // these are used by the modal
+    // these are used by the modal for customizing the buttons
     const actions = [
       <FlatButton
         key="0"
@@ -88,13 +89,14 @@ export default class CategoryCreateModal extends Component {
         onTouchTap={this.handleSubmit}
       />
     ];
+    // this section gets and then creates menu items for each datatype
     const datatypesAvailable = this.props.datatypes;
     let dataTypesItems = datatypesAvailable.map((datatype, idx) => {
       return (
         <MenuItem key={idx} value={datatype.id} primaryText={datatype.name}/>
       );
     });
-
+    // creates the name for the modal from category id
     const editCategoryName = (`Edit Category: ${this.state.id}`);
     return (
       <div>
