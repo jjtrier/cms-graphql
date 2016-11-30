@@ -6,27 +6,35 @@ import {Button, ListGroup, ListGroupItem, Tabs, Tab, SplitButton, MenuItem, Form
 
 // this utility function is used in building each user that is listed in project edit projectmodal
 // the action and the actionTitle define what is listed in the pop up menu lines for each user
-export const mapUsers = (userList, actionOne, actionOneTitle) => {
+export const mapUsers = (userList, actionsArrayIncoming) => {
+  // below maps through the userlist
   return userList.map((user, idx) => {
-    let backgroundColor = blue300;
+    // below maps through the possible split button actions that were sent in
+    let menuItems = actionsArrayIncoming.map((action, idx2) => {
+      return menuItemBuilder(idx2, user, action['action'], action['title'])
+    });
+
     return (
       <ListGroupItem key={idx}>
         <SplitButton title={user.name} pullRight id={user.id}>
-          <MenuItem eventKey="1">
-            <ButtonBuilder
-              user={user}
-              onItemClick={actionOne}
-              buttonTitle={actionOneTitle}
-              >
-            </ButtonBuilder>
-
-          </MenuItem>
-          <MenuItem eventKey="2">Another action</MenuItem>
-          <MenuItem eventKey="3">Something else here</MenuItem>
+          {menuItems}
         </SplitButton>
       </ListGroupItem>
     );
   });
+};
+
+const menuItemBuilder = (eventKey, user, action, actionTitle) => {
+  return (
+    <MenuItem eventKey={eventKey}>
+      <ButtonBuilder
+        user={user}
+        onItemClick={action}
+        buttonTitle={actionTitle}
+        >
+      </ButtonBuilder>
+    </MenuItem>
+  );
 };
 
 export const ButtonBuilder = React.createClass({

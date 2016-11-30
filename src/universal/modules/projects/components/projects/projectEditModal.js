@@ -160,12 +160,22 @@ export default class ProjectEditModal extends Component {
       const userName = user.name.toLowerCase();
       return (userName.includes(this.state.filterUserValue));
     });
-
-    let templateAllUsers = mapUsers(allUsers, addUserToProject, "Add To Project");
+// mapUsers is used to build a user list item, with all of the yummy actions added to is
+    const arrayOfAvailableUserActions = [
+      {action: addUserToProject,
+        title: "Add To Project"
+      }
+    ];
+    let templateAllUsers = mapUsers(allUsers, arrayOfAvailableUserActions);
     const editProjectName = (`Edit Project: ${this.state.id}`);
     // users that are on the project
     // templatize all chosen users to be buttons in Component
-    let templateUsersOnProject = mapUsers(this.state.users, removeUserFromProject, "Remove From Project");
+    const arrayOfChosenUserActions = [
+      {action: removeUserFromProject,
+        title: "Remove From Project"
+      }
+    ];
+    let templateUsersOnProject = mapUsers(this.state.users, arrayOfChosenUserActions);
 
     let that = this;
     //
